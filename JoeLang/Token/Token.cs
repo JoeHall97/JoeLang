@@ -43,7 +43,7 @@ public static class Tokens
 
     // Keywords
 	public const string FUNCTION = "FUNCTION";
-	public const string LET      = "LET";
+	public const string VAR      = "VAR";
 	public const string TRUE     = "TRUE";
 	public const string FALSE    = "FALSE";
 	public const string IF       = "IF";
@@ -52,7 +52,7 @@ public static class Tokens
 
     private static Dictionary<string, string> _keywordsMap = new Dictionary<string, string>{
         {"fn" , FUNCTION},
-        {"let" , LET},
+        {"var" , VAR},
         {"true" , TRUE},
         {"false" , FALSE},
         {"if" , IF},

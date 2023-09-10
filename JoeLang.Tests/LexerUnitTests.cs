@@ -22,14 +22,14 @@ public class LexerUnitTests
 	[Fact]
     public void TestNextToken()
     {
-        var input = @"let five = 5;
-        let ten = 10;
+        var input = @"var five = 5;
+        var ten = 10;
 
-        let add = fn(x, y) {
+        var add = fn(x, y) {
             x + y;
         };
 
-        let result = add(five, ten);
+        var result = add(five, ten);
         !-/*5;
 		5 < 10 > 5;
 		if (5 < 10) {
@@ -43,22 +43,22 @@ public class LexerUnitTests
 
 		var tests = new tokenTest[]
         {
-            // let five = 5;
-		    new tokenTest(Tokens.LET, "let"),
+            // var five = 5;
+		    new tokenTest(Tokens.VAR, "var"),
             new tokenTest(Tokens.IDENT, "five"),
             new tokenTest(Tokens.ASSIGN, "="),
             new tokenTest(Tokens.INT, "5"),
             new tokenTest(Tokens.SEMICOLON, ";"),
-            // let ten = 10;
-            new tokenTest(Tokens.LET, "let"),
+            // var ten = 10;
+            new tokenTest(Tokens.VAR, "var"),
             new tokenTest(Tokens.IDENT, "ten"),
             new tokenTest(Tokens.ASSIGN, "=")   ,
             new tokenTest(Tokens.INT, "10"),
             new tokenTest(Tokens.SEMICOLON, ";"),
-            // let add = fn(x, y) {
+            // var add = fn(x, y) {
             // 		x + y;
             // };
-            new tokenTest(Tokens.LET, "let"),
+            new tokenTest(Tokens.VAR, "var"),
             new tokenTest(Tokens.IDENT, "add"),
             new tokenTest(Tokens.ASSIGN, "="),
             new tokenTest(Tokens.FUNCTION, "fn"),
@@ -74,8 +74,8 @@ public class LexerUnitTests
             new tokenTest(Tokens.SEMICOLON, ";"),
             new tokenTest(Tokens.RBRACE, "}"),
             new tokenTest(Tokens.SEMICOLON, ";"),
-            // let result = add(five, ten);
-		    new tokenTest(Tokens.LET, "let"),
+            // var result = add(five, ten);
+		    new tokenTest(Tokens.VAR, "var"),
             new tokenTest(Tokens.IDENT, "result"),
             new tokenTest(Tokens.ASSIGN, "="),
             new tokenTest(Tokens.IDENT, "add"),
