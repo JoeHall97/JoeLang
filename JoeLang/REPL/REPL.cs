@@ -7,7 +7,7 @@ public static class JoeREPL
 {
     private const string PROMPT = ">> ";
 
-    public static void start()
+    public static void Start()
     {
         while (true) 
         {
@@ -18,7 +18,7 @@ public static class JoeREPL
 
             var lexer = new JoeLexer(line);
 
-            for (var token = lexer.nextToken(); token.Type != Tokens.EOF; token = lexer.nextToken()) 
+            for (var token = lexer.NextToken(); token.Type != Tokens.EOF; token = lexer.NextToken()) 
             { 
                 Console.WriteLine("Type: {0}, Literal: {1}", token.Type, token.Literal);
             }

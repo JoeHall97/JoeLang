@@ -1,5 +1,4 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using JoeLang.Lexer;
 using JoeLang.REPL;
 
 namespace JoeLang;
@@ -13,6 +12,6 @@ class JoeLang
         Console.WriteLine($"Hello {userName}! This is the Joe programming language.");
         Console.WriteLine("Please type in commands.");
 
-        JoeREPL.start();
+        JoeREPL.Start();
     }
 }

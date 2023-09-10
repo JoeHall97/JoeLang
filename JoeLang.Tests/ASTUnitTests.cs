@@ -1,6 +1,5 @@
 ﻿using JoeLang.AST;
 using JoeLang.Token;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 
 namespace JoeLang.Tests;
 

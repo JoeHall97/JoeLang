@@ -15,7 +15,7 @@ public class JoeLexer
     public JoeLexer(string input)
     {
         _input = input;
-        readChar();
+        ReadChar();
     }
 
     public string Input
@@ -23,11 +23,11 @@ public class JoeLexer
         get { return _input; }
     }
 
-    public JoeToken nextToken()
+    public JoeToken NextToken()
     {
         JoeToken token;
 
-        skipWhitespace();
+        SkipWhitespace();
 
         switch (_ch)
         {
@@ -71,10 +71,10 @@ public class JoeLexer
                 token = new JoeToken(Tokens.EOF, "");
                 break;
             case '=':
-                if (peekChar() == '=')
+                if (PeekChar() == '=')
                 {
                     var ch = _ch;
-                    readChar();
+                    ReadChar();
                     var literal = ch.ToString() + _ch.ToString();
                     token = new JoeToken(Tokens.EQ, literal);
                 }
@@ -84,10 +84,10 @@ public class JoeLexer
                 }
                 break;
             case '!':
-                if (peekChar() == '=')
+                if (PeekChar() == '=')
                 {
                     var ch = _ch;
-                    readChar();
+                    ReadChar();
                     var literal = ch.ToString() + _ch.ToString();
                     token = new JoeToken(Tokens.NOT_EQ, literal);
                 }
@@ -99,13 +99,13 @@ public class JoeLexer
             default:
                 if (char.IsLetter(_ch))
                 {
-                    var literal = readIdentifier();
+                    var literal = ReadIdentifier();
                     token = new JoeToken(Tokens.LookupIdentifier(literal), literal);
                     return token;
                 }
                 else if (char.IsDigit(_ch))
                 {
-                    token = new JoeToken(Tokens.INT, readNumber());
+                    token = new JoeToken(Tokens.INT, ReadNumber());
                     return token;
                 }
                 else
@@ -115,12 +115,12 @@ public class JoeLexer
                 break;
         }
 
-        readChar();
+        ReadChar();
         return token;
     }
 
     
-    public char peekChar()
+    public char PeekChar()
     {
         if (_readPosition >= _input.Length)
             return '\0';
@@ -128,7 +128,7 @@ public class JoeLexer
             return _input[_readPosition];
     }
 
-    private void readChar()
+    private void ReadChar()
     {
         if (_readPosition >= _input.Length)
             _ch = '\0';
@@ -138,28 +138,28 @@ public class JoeLexer
         _readPosition += 1;
     }
 
-    private void skipWhitespace()
+    private void SkipWhitespace()
     {
         while (_ch == ' ' || _ch == '\t' || _ch == '\n' || _ch == '\r')
-            readChar();
+            ReadChar();
     }
 
-    private string readIdentifier()
+    private string ReadIdentifier()
     {
         var pos = _position;
         var len = 0;
 
-        while (char.IsLetter(_ch)) { readChar(); len++; }
+        while (char.IsLetter(_ch)) { ReadChar(); len++; }
 
         return _input.Substring(pos, len);
     }
 
-    private string readNumber()
+    private string ReadNumber()
     {
         var pos = _position;
         var len = 0;
 
-        while (char.IsDigit(_ch)) { readChar(); len++; }
+        while (char.IsDigit(_ch)) { ReadChar(); len++; }
 
         return _input.Substring(pos, len);
     }

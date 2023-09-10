@@ -68,7 +68,7 @@ public static class Tokens
         return IDENT;
     }
 
-    public static JoeToken newToken(string type, string literal)
+    public static JoeToken NewToken(string type, string literal)
     {
         return new JoeToken(type, literal);
     }
