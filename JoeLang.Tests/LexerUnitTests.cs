@@ -139,7 +139,7 @@ public class LexerUnitTests
 
         for (int i = 0; i < tests.Length; i++) 
         { 
-            var token = lexer.nextToken();
+            var token = lexer.NextToken();
 
             Assert.Equal(tests[i].expectedType, token.Type);
             Assert.Equal(tests[i].expectedLiteral, token.Literal);

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,17 +31,17 @@ public interface IExpressionNode : INode { }
 
 public class JoeProgram : INode
 {
-    private readonly IStatementNode[] _statmenets;
+    private readonly IStatementNode[] _statements;
 
     public JoeProgram(IStatementNode[] statmenets)
     {
-        _statmenets = statmenets;
+        _statements = statmenets;
     }
 
     public string TokenLiteral() 
     { 
-        if (_statmenets.Length > 0)
-            return _statmenets[0].TokenLiteral();
+        if (_statements.Length > 0)
+            return _statements[0].TokenLiteral();
         return ""; 
     }
 
@@ -48,10 +49,15 @@ public class JoeProgram : INode
     { 
         StringBuilder sb = new();
 
-        foreach (var stat in _statmenets)
+        foreach (var stat in _statements)
             sb.Append(stat.ToString());
 
         return sb.ToString();
+    }
+
+    public IStatementNode[] Statements
+    { 
+        get { return _statements; }
     }
 }
 
@@ -64,6 +70,11 @@ public class Identifier : IExpressionNode
     {
         _token = token;
         _value = value;
+    }
+
+    public string Value
+    {
+        get { return _value; }
     }
 
     public string TokenLiteral() { return _token.Literal; }
@@ -82,6 +93,16 @@ public class CallExpression : IExpressionNode
         _token = token;
         _function = function;
         _arguments = arguments;
+    }
+
+    public IExpressionNode Function
+    { 
+        get { return _function; } 
+    }
+
+    public IExpressionNode[] Arguments
+    { 
+        get { return _arguments; } 
     }
 
     public string TokenLiteral() { return _token.Literal; }
@@ -114,6 +135,11 @@ public class BlockStatement : IStatementNode
         _statements = statements;
     }
 
+    public IStatementNode[] Statements
+    { 
+        get { return _statements; } 
+    }
+
     public string TokenLiteral() { return _token.Literal; }
 
     public override string ToString()
@@ -138,6 +164,16 @@ public class FunctionLiteral : IExpressionNode
         _token = token;
         _parameters = parameters;
         _body = body;
+    }
+
+    public Identifier[] Parameters
+    {
+        get { return _parameters; }
+    }
+
+    public BlockStatement Body
+    { 
+        get { return _body; } 
     }
 
     public string TokenLiteral() { return _token.Literal; }
@@ -165,14 +201,29 @@ public class IfExpression : IExpressionNode
     private readonly JoeToken _token;
     private readonly IExpressionNode _condition;
     private readonly BlockStatement _consequence;
-    private readonly BlockStatement _alternative;
+    private readonly BlockStatement? _alternative;
 
-    public IfExpression(JoeToken token, IExpressionNode condition, BlockStatement consequence, BlockStatement alternative)
+    public IfExpression(JoeToken token, IExpressionNode condition, BlockStatement consequence, BlockStatement? alternative)
     {
         _token = token;
         _condition = condition;
         _consequence = consequence;
         _alternative = alternative;
+    }
+
+    public IExpressionNode Condition
+    { 
+        get { return _condition; } 
+    }
+
+    public BlockStatement Consequence
+    { 
+        get { return _consequence; } 
+    }
+
+    public BlockStatement? Alternative
+    { 
+        get { return _alternative; } 
     }
 
     public string TokenLiteral() { return _token.Literal; }
@@ -207,22 +258,37 @@ public class Boolean : IExpressionNode
         _value = value;
     }
 
+    public bool Value
+    {
+        get { return _value; }
+    }
+
     public string TokenLiteral() { return _token.Literal; }
 
     public override string ToString() { return _token.Literal; }
 }
 
-public class LetStatement : IStatementNode
+public class VarStatement : IStatementNode
 {
     private readonly JoeToken _token;
     private readonly Identifier _name;
     private readonly IExpressionNode _value;
 
-    public LetStatement(JoeToken token, Identifier name, IExpressionNode value)
+    public VarStatement(JoeToken token, Identifier name, IExpressionNode value)
     {
         _token = token;
         _name = name;
         _value = value;
+    }
+
+    public Identifier Name
+    {
+        get { return _name; }
+    }
+
+    public IExpressionNode Value
+    {
+        get { return _value; }
     }
 
     public string TokenLiteral() { return _token.Literal; }
@@ -255,6 +321,11 @@ public class ReturnStatement : IStatementNode
         _returnValue = returnValue;
     }
 
+    public IExpressionNode ReturnValue
+    {
+        get { return _returnValue; }
+    }
+
     public string TokenLiteral() { return _token.Literal; }
 
     public override string ToString()
@@ -283,6 +354,11 @@ public class ExpressionStatement : IStatementNode
         _expression= expression;
     }
 
+    public IExpressionNode Expression
+    { 
+        get { return _expression; } 
+    }
+
     public string TokenLiteral() { return _token.Literal; }
 
     public override string ToString() 
@@ -294,12 +370,17 @@ public class ExpressionStatement : IStatementNode
 public class IntegerLiteral : IExpressionNode
 {
     private readonly JoeToken _token;
-    private readonly Int64 _value;
+    private readonly long _value;
 
-    public IntegerLiteral(JoeToken token, Int64 value) 
+    public IntegerLiteral(JoeToken token, long value) 
     {
         _token = token;
         _value= value;
+    }
+
+    public long Value
+    {
+        get { return _value; }
     }
 
     public string TokenLiteral() { return _token.Literal; }
@@ -318,6 +399,16 @@ public class PrefixExpression : IExpressionNode
         _token = token;
         _operator= op; 
         _right= right;
+    }
+
+    public string Operator
+    {
+        get { return _operator; }
+    }
+
+    public IExpressionNode Right
+    { 
+        get { return _right; } 
     }
 
     public string TokenLiteral() { return _token.Literal; }
@@ -348,6 +439,21 @@ public class InfixExpression : IExpressionNode
         _left = left;
         _operator = op;
         _right = right;
+    }
+
+    public string Operator
+    { 
+        get { return _operator; } 
+    }
+
+    public IExpressionNode Left
+    {
+        get { return _left; }
+    }
+
+    public IExpressionNode Right
+    {
+        get { return _right; }
     }
 
     public string TokenLiteral() { return _token.Literal; }

@@ -50,7 +50,8 @@ public static class Tokens
 	public const string ELSE     = "ELSE";
 	public const string RETURN   = "RETURN";
 
-    private static Dictionary<string, string> _keywordsMap = new Dictionary<string, string>{
+    private static Dictionary<string, string> _keywordsMap = new()
+    {
         {"fn" , FUNCTION},
         {"var" , VAR},
         {"true" , TRUE},
