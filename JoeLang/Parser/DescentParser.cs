@@ -1,13 +1,7 @@
 ﻿using JoeLang.AST;
+using JoeLang.Constants;
 using JoeLang.Lexer;
 using JoeLang.Token;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace JoeLang.Parser;
 
@@ -27,75 +21,75 @@ public class DescentParser
         CALL
     }
 
-    private readonly JoeLexer _lexer;
+    private readonly JoeLexer lexer;
 
-    private JoeToken _currToken;
-    private JoeToken _peekToken;
-    private List<string> _errors;
+    private JoeToken currToken;
+    private JoeToken peekToken;
+    private List<string> errors;
 
-    private Dictionary<string, PrefixParseFunction> _prefixFunctions;
-    private Dictionary<string, InfixParseFunction> _infixFunctions;
+    private readonly Dictionary<string, PrefixParseFunction> prefixFunctions;
+    private readonly Dictionary<string, InfixParseFunction> infixFunctions;
 
-    private readonly Dictionary<string, Precedence> _precidenceMap = new()
+    private readonly Dictionary<string, Precedence> precidenceMap = new()
     {
-        { Tokens.EQ, Precedence.EQUALS },
-        { Tokens.NOT_EQ, Precedence.EQUALS },
-        { Tokens.LT, Precedence.LESSGREATER },
-        { Tokens.GT, Precedence.LESSGREATER },
-        { Tokens.PLUS, Precedence.SUM },
-        { Tokens.MINUS, Precedence.SUM },
-        { Tokens.SLASH, Precedence.PRODUCT },
-        { Tokens.ASTERISK, Precedence.PRODUCT },
-        { Tokens.LPAREN, Precedence.CALL },
+        { TokenConstants.EQ, Precedence.EQUALS },
+        { TokenConstants.NOT_EQ, Precedence.EQUALS },
+        { TokenConstants.LT, Precedence.LESSGREATER },
+        { TokenConstants.GT, Precedence.LESSGREATER },
+        { TokenConstants.PLUS, Precedence.SUM },
+        { TokenConstants.MINUS, Precedence.SUM },
+        { TokenConstants.SLASH, Precedence.PRODUCT },
+        { TokenConstants.ASTERISK, Precedence.PRODUCT },
+        { TokenConstants.LPAREN, Precedence.CALL },
     };
     
     public DescentParser(JoeLexer lexer) 
     {
-        _lexer = lexer;
-        _errors = new List<string>();
+        this.lexer = lexer;
+        errors = new List<string>();
 
         // read in two tokens to make sure that both curr and peek tokens are set
         NextToken();
         NextToken();
 
-        _prefixFunctions = new()
+        prefixFunctions = new()
         {
-            { Tokens.IDENT, ParseIdentifier },
-            { Tokens.INT, ParseIntegerLiteral },
-            { Tokens.MINUS, ParsePrefixExpression },
-            { Tokens.BANG, ParsePrefixExpression },
-            { Tokens.TRUE, ParseBoolean },
-            { Tokens.FALSE, ParseBoolean },
-            { Tokens.LPAREN, ParseGroupExpression },
-            { Tokens.IF, ParseIfExpression },
-            { Tokens.FUNCTION, ParseFunctionLiteral },
+            { TokenConstants.IDENT, ParseIdentifier },
+            { TokenConstants.INT, ParseIntegerLiteral },
+            { TokenConstants.MINUS, ParsePrefixExpression },
+            { TokenConstants.BANG, ParsePrefixExpression },
+            { TokenConstants.TRUE, ParseBoolean },
+            { TokenConstants.FALSE, ParseBoolean },
+            { TokenConstants.LPAREN, ParseGroupExpression },
+            { TokenConstants.IF, ParseIfExpression },
+            { TokenConstants.FUNCTION, ParseFunctionLiteral },
         };
 
-        _infixFunctions = new()
+        infixFunctions = new()
         {
 
-            { Tokens.PLUS, ParseInfixExpression },
-            { Tokens.MINUS, ParseInfixExpression },
-            { Tokens.SLASH, ParseInfixExpression },
-            { Tokens.ASTERISK, ParseInfixExpression },
-            { Tokens.EQ, ParseInfixExpression },
-            { Tokens.NOT_EQ, ParseInfixExpression },
-            { Tokens.LT, ParseInfixExpression },
-            { Tokens.GT, ParseInfixExpression },
-            { Tokens.LPAREN, ParseCallExpression },
+            { TokenConstants.PLUS, ParseInfixExpression },
+            { TokenConstants.MINUS, ParseInfixExpression },
+            { TokenConstants.SLASH, ParseInfixExpression },
+            { TokenConstants.ASTERISK, ParseInfixExpression },
+            { TokenConstants.EQ, ParseInfixExpression },
+            { TokenConstants.NOT_EQ, ParseInfixExpression },
+            { TokenConstants.LT, ParseInfixExpression },
+            { TokenConstants.GT, ParseInfixExpression },
+            { TokenConstants.LPAREN, ParseCallExpression },
         };
     }
 
     public string[] Errors
     {
-        get => _errors.ToArray();
+        get => errors.ToArray();
     }
 
     public JoeProgram ParseProgram()
     {
         List<IStatementNode> statements = new();
 
-        while (!CurrentTokenIs(Tokens.EOF)) 
+        while (!CurrentTokenIs(TokenConstants.EOF)) 
         {
             var statement = ParseStatement();
             if (statement != null)
@@ -108,30 +102,30 @@ public class DescentParser
 
     private void NextToken()
     {
-        _currToken = _peekToken;
-        _peekToken = _lexer.NextToken();
+        currToken = peekToken;
+        peekToken = lexer.NextToken();
     }
 
     private bool CurrentTokenIs(string tokenType)
     {
-        return string.Equals(_currToken.Type, tokenType);
+        return string.Equals(currToken.Type, tokenType);
     }
 
     private bool PeekTokenIs(string tokenType)
     {
-        return string.Equals(tokenType, _peekToken.Type);
+        return string.Equals(tokenType, peekToken.Type);
     }
 
     private Precedence PeekPrecedence()
     {
-        if (_precidenceMap.TryGetValue(_peekToken.Type, out Precedence precedence))
+        if (precidenceMap.TryGetValue(peekToken.Type, out Precedence precedence))
             return precedence;
         return Precedence.LOWEST;
     }
 
     private Precedence CurrentPrecedence()
     {
-        if (_precidenceMap.TryGetValue(_currToken.Type, out Precedence currentPrecedence))
+        if (precidenceMap.TryGetValue(currToken.Type, out Precedence currentPrecedence))
             return currentPrecedence;
         return Precedence.LOWEST;
     }
@@ -144,29 +138,28 @@ public class DescentParser
             return true;
         }
         
-        _errors.Add($"expected next token to be {tokenType}, got {_peekToken.Type} instead");
+        errors.Add($"expected next token to be {tokenType}, got {peekToken.Type} instead");
         return false;
     }
 
     private void NoPrefixParseFunctionError(string tokenType)
     {
-        _errors.Add($"no prefix parse function for {tokenType} found");
+        errors.Add($"no prefix parse function for {tokenType} found");
     }
 
     private IExpressionNode? ParseExpression(Precedence precidence)
     {
-        PrefixParseFunction prefixParseFunction;
-        var foundParseFunction = _prefixFunctions.TryGetValue(_currToken.Type, out prefixParseFunction);
+        var foundParseFunction = prefixFunctions.TryGetValue(currToken.Type, out PrefixParseFunction? prefixParseFunction);
         if (!foundParseFunction) 
         {
-            NoPrefixParseFunctionError(_currToken.Type);
+            NoPrefixParseFunctionError(currToken.Type);
             return null;
         }
         var leftExpression = prefixParseFunction();
 
-        while (!PeekTokenIs(Tokens.SEMICOLON) && precidence < PeekPrecedence())
+        while (!PeekTokenIs(TokenConstants.SEMICOLON) && precidence < PeekPrecedence())
         {
-            var infixFunction = _infixFunctions[_peekToken.Type];
+            var infixFunction = infixFunctions[peekToken.Type];
             if (infixFunction == null)
                 return leftExpression;
 
@@ -180,36 +173,36 @@ public class DescentParser
 
     private IExpressionNode? ParseIdentifier()
     {
-        return new Identifier(_currToken, _currToken.Literal);
+        return new Identifier(currToken, currToken.Literal);
     }
 
     private IExpressionNode? ParseIntegerLiteral()
     {
-        if (!long.TryParse(_currToken.Literal, out long value))
+        if (!long.TryParse(currToken.Literal, out long value))
         {
-            var errorMessage = $"could not parse {_currToken.Literal} as integer";
-            _errors.Add(errorMessage);
+            var errorMessage = $"could not parse {currToken.Literal} as integer";
+            errors.Add(errorMessage);
             return null;
         }
 
-        return new IntegerLiteral(_currToken, value);
+        return new IntegerLiteral(currToken, value);
     }
 
     private IExpressionNode? ParsePrefixExpression()
     {
-        var currToken = _currToken; 
-        var currTokenLiteral = _currToken.Literal;
+        var token = currToken; 
+        var tokenLiteral = currToken.Literal;
 
         NextToken();
 
         var right = ParseExpression(Precedence.PREFIX);
 
-        return new PrefixExpression(currToken, currTokenLiteral, right);
+        return new PrefixExpression(token, tokenLiteral, right);
     }
 
     private IExpressionNode? ParseBoolean()
     {
-        return new AST.Boolean(_currToken, CurrentTokenIs(Tokens.TRUE));
+        return new AST.Boolean(currToken, CurrentTokenIs(TokenConstants.TRUE));
     }
 
     private IExpressionNode? ParseGroupExpression()
@@ -217,7 +210,7 @@ public class DescentParser
         NextToken();
 
         var expression = ParseExpression(Precedence.LOWEST);
-        if (PeekExpected(Tokens.RPAREN))
+        if (PeekExpected(TokenConstants.RPAREN))
             return null;
 
         return expression;
@@ -225,61 +218,61 @@ public class DescentParser
 
     private VarStatement? ParseVarStatement()
     {
-        JoeToken currToken = _currToken;
+        JoeToken token = currToken;
         Identifier name;
         IExpressionNode? value;
 
-        if (!PeekExpected(Tokens.IDENT))
+        if (!PeekExpected(TokenConstants.IDENT))
             return null;
 
-        name = new Identifier(_currToken, _currToken.Literal);
+        name = new Identifier(token, token.Literal);
 
-        if (!PeekExpected(Tokens.ASSIGN)) 
+        if (!PeekExpected(TokenConstants.ASSIGN)) 
             return null;
 
         NextToken();
 
         value = ParseExpression(Precedence.LOWEST);
 
-        if (PeekTokenIs(Tokens.SEMICOLON))
+        if (PeekTokenIs(TokenConstants.SEMICOLON))
             NextToken();
 
-        return new VarStatement(currToken, name, value);
+        return new VarStatement(token, name, value);
     }
 
     private ReturnStatement? ParseReturnStatement()
     {
-        JoeToken currToken = _currToken;
+        JoeToken token = currToken;
         IExpressionNode? returnValue;
 
         NextToken();
 
         returnValue = ParseExpression(Precedence.LOWEST);
 
-        if (PeekExpected(Tokens.SEMICOLON))
+        if (PeekExpected(TokenConstants.SEMICOLON))
             NextToken();
 
-        return new ReturnStatement(currToken, returnValue);
+        return new ReturnStatement(token, returnValue);
     }
 
     private ExpressionStatement? ParseExpressionStatement()
     {
-        JoeToken currToken = _currToken;
+        JoeToken token = currToken;
         IExpressionNode? expression = ParseExpression(Precedence.LOWEST);
 
-        if (PeekTokenIs(Tokens.SEMICOLON))
+        if (PeekTokenIs(TokenConstants.SEMICOLON))
             NextToken();
 
-        return new ExpressionStatement(currToken, expression);
+        return new ExpressionStatement(token, expression);
     }
 
     private IStatementNode? ParseStatement()
     {
-        switch (_currToken.Type) 
+        switch (currToken.Type) 
         {
-            case Tokens.VAR:
+            case TokenConstants.VAR:
                 return ParseVarStatement();
-            case Tokens.RETURN:
+            case TokenConstants.RETURN:
                 return ParseReturnStatement();
             default:
                 return ParseExpressionStatement();
@@ -288,12 +281,12 @@ public class DescentParser
 
     private BlockStatement ParseBlockStatement()
     {
-        JoeToken currToken = _currToken;
-        List<IStatementNode> statements = new List<IStatementNode>();
+        JoeToken token = currToken;
+        List<IStatementNode> statements = new();
 
         NextToken();
 
-        while (!CurrentTokenIs(Tokens.RBRACE) && !CurrentTokenIs(Tokens.EOF)) 
+        while (!CurrentTokenIs(TokenConstants.RBRACE) && !CurrentTokenIs(TokenConstants.EOF)) 
         {
             var statement = ParseStatement();
             if (statement != null)
@@ -301,49 +294,49 @@ public class DescentParser
             NextToken();
         }
 
-        return new BlockStatement(_currToken, statements.ToArray());
+        return new BlockStatement(token, statements.ToArray());
     }
 
     private IExpressionNode? ParseIfExpression()
     {
-        JoeToken currToken = _currToken;
+        JoeToken token = currToken;
 
         IExpressionNode condition;
         BlockStatement consequence;
         BlockStatement? alternative = null;
 
-        if (!PeekExpected(Tokens.LPAREN))
+        if (!PeekExpected(TokenConstants.LPAREN))
             return null;
 
         NextToken();
         condition = ParseExpression(Precedence.LOWEST);
 
-        if (!PeekExpected(Tokens.RPAREN))
+        if (!PeekExpected(TokenConstants.RPAREN))
             return null;
 
-        if (!PeekExpected(Tokens.LBRACE))
+        if (!PeekExpected(TokenConstants.LBRACE))
             return null;
 
         consequence = ParseBlockStatement();
 
-        if (PeekTokenIs(Tokens.ELSE))
+        if (PeekTokenIs(TokenConstants.ELSE))
         {
             NextToken();
 
-            if (!PeekExpected(Tokens.LBRACE))
+            if (!PeekExpected(TokenConstants.LBRACE))
                 return null;
 
             alternative = ParseBlockStatement();
         }
 
-        return new IfExpression(currToken, condition, consequence, alternative);
+        return new IfExpression(token, condition, consequence, alternative);
     }
 
     private Identifier[]? ParseFunctionParameters()
     {
         List<Identifier> identifiers = new List<Identifier>();
 
-        if (PeekTokenIs(Tokens.RPAREN))
+        if (PeekTokenIs(TokenConstants.RPAREN))
         {
             NextToken();
             return identifiers.ToArray();
@@ -351,18 +344,18 @@ public class DescentParser
 
         NextToken();
 
-        var identifier = new Identifier(_currToken, _currToken.Literal);
+        var identifier = new Identifier(currToken, currToken.Literal);
         identifiers.Add(identifier);
 
-        while (PeekTokenIs(Tokens.COMMA))
+        while (PeekTokenIs(TokenConstants.COMMA))
         {
             NextToken();
             NextToken();
-            identifier = new Identifier(_currToken, _currToken.Literal);
+            identifier = new Identifier(currToken, currToken.Literal);
             identifiers.Add(identifier);
         }
 
-        if (!PeekExpected(Tokens.RPAREN))
+        if (!PeekExpected(TokenConstants.RPAREN))
             return null;
 
         return identifiers.ToArray();
@@ -370,41 +363,41 @@ public class DescentParser
 
     private IExpressionNode? ParseFunctionLiteral()
     {
-        JoeToken currToken = _currToken;
+        JoeToken token = currToken;
         Identifier[]? functionParamaters;
         BlockStatement body;
 
-        if (!PeekExpected(Tokens.LPAREN))
+        if (!PeekExpected(TokenConstants.LPAREN))
             return null;
 
         functionParamaters = ParseFunctionParameters();
 
-        if (!PeekExpected(Tokens.LBRACE))
+        if (!PeekExpected(TokenConstants.LBRACE))
             return null;
 
         body = ParseBlockStatement();
 
-        return new FunctionLiteral(currToken, functionParamaters, body);
+        return new FunctionLiteral(token, functionParamaters, body);
     }
 
     private InfixExpression ParseInfixExpression(IExpressionNode left)
     {
-        JoeToken currToken = _currToken;
-        string op = _currToken.Literal;
+        JoeToken token = currToken;
+        string op = currToken.Literal;
         IExpressionNode? right;
 
         var precedence = CurrentPrecedence();
         NextToken();
         right = ParseExpression(precedence);
 
-        return new InfixExpression(currToken, left, op, right);
+        return new InfixExpression(token, left, op, right);
     }
 
     private IExpressionNode[]? ParseCallArguments()
     {
-        List<IExpressionNode> arguments = new List<IExpressionNode>();
+        List<IExpressionNode> arguments = new();
 
-        if (PeekTokenIs(Tokens.RPAREN))
+        if (PeekTokenIs(TokenConstants.RPAREN))
         {
             NextToken();
             return arguments.ToArray();
@@ -414,7 +407,7 @@ public class DescentParser
 
         arguments.Add(ParseExpression(Precedence.LOWEST));
 
-        while (PeekTokenIs(Tokens.COMMA)) 
+        while (PeekTokenIs(TokenConstants.COMMA)) 
         { 
             NextToken();
             NextToken();
@@ -422,7 +415,7 @@ public class DescentParser
             arguments.Add(ParseExpression(Precedence.LOWEST));
         }
 
-        if (!PeekExpected(Tokens.RPAREN))
+        if (!PeekExpected(TokenConstants.RPAREN))
             return null;
 
         return arguments.ToArray();
@@ -430,8 +423,8 @@ public class DescentParser
 
     private CallExpression ParseCallExpression(IExpressionNode function)
     {
-        JoeToken currToken = _currToken;
+        JoeToken token = currToken;
         IExpressionNode[]? arguments = ParseCallArguments();
-        return new CallExpression(currToken, function, arguments);
+        return new CallExpression(token, function, arguments);
     }
 }

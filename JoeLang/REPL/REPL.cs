@@ -1,5 +1,5 @@
+using JoeLang.Constants;
 using JoeLang.Lexer;
-using JoeLang.Token;
 
 namespace JoeLang.REPL;
 
@@ -42,7 +42,7 @@ public static class JoeREPL
 
             var lexer = new JoeLexer(line);
 
-            for (var token = lexer.NextToken(); token.Type != Tokens.EOF; token = lexer.NextToken()) 
+            for (var token = lexer.NextToken(); token.Type != TokenConstants.EOF; token = lexer.NextToken()) 
             { 
                 Console.WriteLine("Type: {0}, Literal: {1}", token.Type, token.Literal);
             }
