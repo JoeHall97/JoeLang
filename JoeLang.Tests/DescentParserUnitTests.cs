@@ -531,8 +531,8 @@ public class DescentParserUnitTests
         Assert.Equal(3, callExpression.Arguments.Length);
 
         TestLiteralExpression(callExpression.Arguments[0], 1);
-        TestInfixExpression(callExpression.Arguments[1], "*", "2", "3");
-        TestInfixExpression(callExpression.Arguments[2], "+", "4", "5");
+        TestInfixExpression(callExpression.Arguments[1], "*", 2, 3);
+        TestInfixExpression(callExpression.Arguments[2], "+", 4, 5);
     }
 
     private static void TestInfixExpression(IExpressionNode expression, string op, dynamic left, dynamic right)

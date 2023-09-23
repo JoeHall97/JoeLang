@@ -225,7 +225,7 @@ public class DescentParser
         if (!PeekExpected(TokenConstants.IDENT))
             return null;
 
-        name = new Identifier(token, token.Literal);
+        name = new Identifier(currToken, currToken.Literal);
 
         if (!PeekExpected(TokenConstants.ASSIGN)) 
             return null;
