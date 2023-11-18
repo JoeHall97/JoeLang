@@ -1,5 +1,8 @@
 using JoeLang.Constants;
+using JoeLang.Evaluator;
 using JoeLang.Lexer;
+using JoeLang.Object;
+using JoeLang.Parser;
 
 namespace JoeLang.REPL;
 
@@ -33,6 +36,9 @@ public static class JoeREPL
     public static void Start()
     {
         Console.WriteLine(COFFEE);
+        var environment = new JoeEnvironment();
+        var evaluator = new JoeEvaluator();
+
         while (true) 
         {
             Console.Write(PROMPT);
@@ -41,11 +47,25 @@ public static class JoeREPL
                 return;
 
             var lexer = new JoeLexer(line);
+            var parser = new DescentParser(lexer);
+            var program = parser.ParseProgram();
 
-            for (var token = lexer.NextToken(); token.Type != TokenConstants.EOF; token = lexer.NextToken()) 
-            { 
-                Console.WriteLine("Type: {0}, Literal: {1}", token.Type, token.Literal);
+            if (parser.Errors.Length > 0)
+            {
+                PrintParserErrors(parser.Errors);
+                continue;
             }
+
+            var evaluated = evaluator.Evaluate(program,environment);
+            if (evaluated != null)
+                Console.WriteLine(evaluated.Inspect());
         }
+    }
+
+    private static void PrintParserErrors(string[] errors) 
+    {
+        Console.WriteLine("Encountered parser errors:");
+        foreach (var error in errors) 
+            Console.WriteLine('\t' + error + '\n');
     }
 }
