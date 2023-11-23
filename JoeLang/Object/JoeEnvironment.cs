@@ -25,8 +25,13 @@ public class JoeEnvironment
     public JoeEnvironment? Outer { get =>  outer; }
 
     public IJoeObject? Get(string key) 
-    { 
-        return store.GetValueOrDefault(key);
+    {
+        IJoeObject? result;
+        if (store.TryGetValue(key,out result))
+            return result;
+        if (outer != null)
+            return outer.Get(key);
+        return null;
     }
 
     public void Set(string name, IJoeObject value) 

@@ -210,7 +210,7 @@ public class DescentParser
         NextToken();
 
         var expression = ParseExpression(Precedence.LOWEST);
-        if (PeekExpected(TokenConstants.RPAREN))
+        if (!PeekExpected(TokenConstants.RPAREN))
             return null;
 
         return expression;
@@ -249,7 +249,7 @@ public class DescentParser
 
         returnValue = ParseExpression(Precedence.LOWEST);
 
-        if (PeekExpected(TokenConstants.SEMICOLON))
+        if (PeekTokenIs(TokenConstants.SEMICOLON))
             NextToken();
 
         return new ReturnStatement(token, returnValue);

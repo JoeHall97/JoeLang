@@ -65,7 +65,8 @@ public class EvaluatorUnitTests
             addTwo(2);
             """;
 
-        TestIntegerObject(TestEvaluate(input), 4);
+        var evaluated = TestEvaluate(input);
+        TestIntegerObject(evaluated, 4);
     }
 
     [Fact]
@@ -87,7 +88,7 @@ public class EvaluatorUnitTests
     {
         var tests = new IntegerTest[]
         {
-            //new("var identity = fn(x) { return x; }; identity(5);", 5),
+            new("var identity = fn(x) { return x; }; identity(5);", 5),
             new("var identity = fn(x) { x; }; identity(5);", 5),
             new("var double = fn(x) { x * 2; }; double(5);", 10),
             new("var add = fn(x, y) { x + y; }; add(5, 5);", 10),
@@ -107,21 +108,21 @@ public class EvaluatorUnitTests
     {
         var tests = new IntegerTest[]
         {
-            //new("5", 5),
-            //new("10", 10),
-            //new("-5", -5),
-            //new("-10", -10),
-            //new("5 + 5 + 5 + 5 - 10", 10),
-            //new("2 * 2 * 2 * 2 * 2", 32),
-            //new("-50 + 100 + -50", 0),
-            //new("5 * 2 + 10", 20),
-            //new("5 + 2 * 10", 25),
-            //new("20 + 2 * -10", 0),
-            //new("50 / 2 * 2 + 10", 60),
+            new("5", 5),
+            new("10", 10),
+            new("-5", -5),
+            new("-10", -10),
+            new("5 + 5 + 5 + 5 - 10", 10),
+            new("2 * 2 * 2 * 2 * 2", 32),
+            new("-50 + 100 + -50", 0),
+            new("5 * 2 + 10", 20),
+            new("5 + 2 * 10", 25),
+            new("20 + 2 * -10", 0),
+            new("50 / 2 * 2 + 10", 60),
             new("2 * (5 + 10)", 30),
-            //new("3 * 3 * 3 + 10", 37),
-            //new("3 * (3 * 3) + 10", 37),
-            //new("(5 + 10 * 2 + 15 / 3) * 2 + -10", 50)
+            new("3 * 3 * 3 + 10", 37),
+            new("3 * (3 * 3) + 10", 37),
+            new("(5 + 10 * 2 + 15 / 3) * 2 + -10", 50)
         };
 
         foreach (var test in tests) 
