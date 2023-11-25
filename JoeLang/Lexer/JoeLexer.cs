@@ -97,6 +97,9 @@ public class JoeLexer
                     token = new JoeToken(TokenConstants.BANG, ch.ToString());
                 }
                 break;
+            case '"':
+                token = new JoeToken(TokenConstants.STRING, ReadString());
+                break;
             default:
                 if (char.IsLetter(ch))
                 {
@@ -127,6 +130,20 @@ public class JoeLexer
             return '\0';
         else
             return input[readPosition];
+    }
+
+    public string ReadString()
+    {
+        var pos = position + 1;
+
+        while (true) 
+        { 
+            ReadChar();
+            if (ch == '"' || ch == '\0')
+                break;
+        }
+
+        return input.Substring(pos,position-pos);
     }
 
     private void ReadChar()

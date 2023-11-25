@@ -32,6 +32,10 @@ public class JoeEvaluator
             // expressions
             case AST.IntegerLiteral integerLiteral:
                 return new JoeInteger(integerLiteral.Value);
+            case AST.Boolean booleanObject:
+                return BoolToBooleanObject(booleanObject.Value);
+            case AST.StringLiteral stringLiteral:
+                return new JoeString(stringLiteral.Value);
             case AST.FunctionLiteral functionLiteral: 
                 var parameters = functionLiteral.Parameters;
                 var body = functionLiteral.Body;
@@ -45,8 +49,6 @@ public class JoeEvaluator
                     return arguments[0];
 
                 return ApplyFunction(function, arguments);
-            case AST.Boolean booleanObject:
-                return BoolToBooleanObject(booleanObject.Value);
             case AST.PrefixExpression prefixExpression: 
                 var prefixRight = Evaluate(prefixExpression.Right, environment);
                 if (IsError(prefixRight)) 
@@ -108,6 +110,9 @@ public class JoeEvaluator
     { 
         if (left is JoeInteger leftInt && right is JoeInteger rightInt)
             return EvaluateIntegerInfixExpression(op, leftInt, rightInt);
+
+        if (left is JoeString leftString && right is JoeString rightString)
+            return EvaluateStringInfixExpression(op, leftString, rightString);
         
         if (left.Type() != right.Type())
             return new JoeError($"type mismatch: {left.Type()} {op} {right.Type()}");
@@ -134,6 +139,14 @@ public class JoeEvaluator
             "!=" => BoolToBooleanObject(left.Value != right.Value),
             _    => new JoeError($"unknown operator: {left.Type()} {op} {right.Type()}"),
         };
+    }
+
+    private IJoeObject EvaluateStringInfixExpression(string op, JoeString left, JoeString right) 
+    { 
+        if (op != "+")
+            return new JoeError($"unknown operator: {left.Type()} {op} {right.Type()}");
+
+        return new JoeString(left.Value + right.Value);
     }
 
     private IJoeObject EvaluatePrefixExpression(string op, IJoeObject right)

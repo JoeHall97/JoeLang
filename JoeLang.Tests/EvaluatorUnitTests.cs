@@ -166,6 +166,26 @@ public class EvaluatorUnitTests
     }
 
     [Fact]
+    public void TestStringLiteral()
+    {
+        var input = "\"Hello World!\"";
+
+        var evaluated = TestEvaluate(input);
+        Assert.IsType<JoeString>(evaluated);
+        Assert.Equal("Hello World!", ((JoeString)evaluated).Value);
+    }
+
+    [Fact]
+    public void TestStringConcatenation()
+    {
+        var input = "\"Hello\" + \" \" + \"World!\"";
+
+        var evaluated = TestEvaluate(input);
+        Assert.IsType<JoeString>(evaluated);
+        Assert.Equal("Hello World!", ((JoeString)evaluated).Value);
+    }
+
+    [Fact]
     public void TestIfElseExpressions()
     {
         var tests = new DynamicTest[]
@@ -268,7 +288,8 @@ public class EvaluatorUnitTests
             """,
 			"unknown operator: BOOLEAN + BOOLEAN"),
             new("foobar",
-            "identifier not found: foobar")
+            "identifier not found: foobar"),
+            new("\"Hello\" - \"World\"", "unknown operator: STRING - STRING")
         };
 
         foreach (var test in tests) 

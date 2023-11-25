@@ -382,6 +382,24 @@ public class IntegerLiteral : IExpressionNode
     public override string ToString() { return token.Literal; }
 }
 
+public class StringLiteral : IExpressionNode
+{
+    private readonly JoeToken token;
+    private readonly string value;
+
+    public StringLiteral(JoeToken token, string value)
+    {
+        this.token = token;
+        this.value = value;
+    }
+
+    public JoeToken Token { get => token; }
+    public string Value { get => value; }
+
+    public string TokenLiteral() { return token.Literal; }
+    public override string ToString() { return token.Literal; }
+}
+
 public class PrefixExpression : IExpressionNode
 {
     private readonly JoeToken token;

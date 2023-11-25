@@ -8,6 +8,7 @@ public static class TokenConstants
     // Identifiers + literals
     public const string IDENT = "IDENT";
     public const string INT = "INT";
+    public const string STRING = "STRING";
 
     // Operators
     public const string ASSIGN = "=";

@@ -5,9 +5,9 @@ namespace JoeLang.Tests;
 
 public class LexerUnitTests
 {
-	private struct tokenTest
+	private struct TokenTest
 	{
-        public tokenTest(string type, string literal)
+        public TokenTest(string type, string literal)
         {
             expectedType = type;
             expectedLiteral = literal;
@@ -37,100 +37,106 @@ public class LexerUnitTests
 		}
 	
 		10 == 10;
-		10 != 9;";
+		10 != 9;
+        ";
+        input += $"\"foo bar\"\n\"foobar\"";
 
-		var tests = new tokenTest[]
+        var tests = new TokenTest[]
         {
             // var five = 5;
-		    new tokenTest(TokenConstants.VAR, "var"),
-            new tokenTest(TokenConstants.IDENT, "five"),
-            new tokenTest(TokenConstants.ASSIGN, "="),
-            new tokenTest(TokenConstants.INT, "5"),
-            new tokenTest(TokenConstants.SEMICOLON, ";"),
+		    new TokenTest(TokenConstants.VAR, "var"),
+            new TokenTest(TokenConstants.IDENT, "five"),
+            new TokenTest(TokenConstants.ASSIGN, "="),
+            new TokenTest(TokenConstants.INT, "5"),
+            new TokenTest(TokenConstants.SEMICOLON, ";"),
             // var ten = 10;
-            new tokenTest(TokenConstants.VAR, "var"),
-            new tokenTest(TokenConstants.IDENT, "ten"),
-            new tokenTest(TokenConstants.ASSIGN, "=")   ,
-            new tokenTest(TokenConstants.INT, "10"),
-            new tokenTest(TokenConstants.SEMICOLON, ";"),
+            new TokenTest(TokenConstants.VAR, "var"),
+            new TokenTest(TokenConstants.IDENT, "ten"),
+            new TokenTest(TokenConstants.ASSIGN, "=")   ,
+            new TokenTest(TokenConstants.INT, "10"),
+            new TokenTest(TokenConstants.SEMICOLON, ";"),
             // var add = fn(x, y) {
             // 		x + y;
             // };
-            new tokenTest(TokenConstants.VAR, "var"),
-            new tokenTest(TokenConstants.IDENT, "add"),
-            new tokenTest(TokenConstants.ASSIGN, "="),
-            new tokenTest(TokenConstants.FUNCTION, "fn"),
-            new tokenTest(TokenConstants.LPAREN, "("),
-            new tokenTest(TokenConstants.IDENT, "x"),
-            new tokenTest(TokenConstants.COMMA, ","),
-            new tokenTest(TokenConstants.IDENT, "y") ,
-            new tokenTest(TokenConstants.RPAREN, ")"),
-            new tokenTest(TokenConstants.LBRACE, "{"),
-            new tokenTest(TokenConstants.IDENT, "x"),
-            new tokenTest(TokenConstants.PLUS, "+"),
-            new tokenTest(TokenConstants.IDENT, "y"),
-            new tokenTest(TokenConstants.SEMICOLON, ";"),
-            new tokenTest(TokenConstants.RBRACE, "}"),
-            new tokenTest(TokenConstants.SEMICOLON, ";"),
+            new TokenTest(TokenConstants.VAR, "var"),
+            new TokenTest(TokenConstants.IDENT, "add"),
+            new TokenTest(TokenConstants.ASSIGN, "="),
+            new TokenTest(TokenConstants.FUNCTION, "fn"),
+            new TokenTest(TokenConstants.LPAREN, "("),
+            new TokenTest(TokenConstants.IDENT, "x"),
+            new TokenTest(TokenConstants.COMMA, ","),
+            new TokenTest(TokenConstants.IDENT, "y") ,
+            new TokenTest(TokenConstants.RPAREN, ")"),
+            new TokenTest(TokenConstants.LBRACE, "{"),
+            new TokenTest(TokenConstants.IDENT, "x"),
+            new TokenTest(TokenConstants.PLUS, "+"),
+            new TokenTest(TokenConstants.IDENT, "y"),
+            new TokenTest(TokenConstants.SEMICOLON, ";"),
+            new TokenTest(TokenConstants.RBRACE, "}"),
+            new TokenTest(TokenConstants.SEMICOLON, ";"),
             // var result = add(five, ten);
-		    new tokenTest(TokenConstants.VAR, "var"),
-            new tokenTest(TokenConstants.IDENT, "result"),
-            new tokenTest(TokenConstants.ASSIGN, "="),
-            new tokenTest(TokenConstants.IDENT, "add"),
-            new tokenTest(TokenConstants.LPAREN, "("),
-            new tokenTest(TokenConstants.IDENT, "five"),
-            new tokenTest(TokenConstants.COMMA, ","),
-            new tokenTest(TokenConstants.IDENT, "ten"),
-            new tokenTest(TokenConstants.RPAREN, ")"),
-            new tokenTest(TokenConstants.SEMICOLON, ";"),
+		    new TokenTest(TokenConstants.VAR, "var"),
+            new TokenTest(TokenConstants.IDENT, "result"),
+            new TokenTest(TokenConstants.ASSIGN, "="),
+            new TokenTest(TokenConstants.IDENT, "add"),
+            new TokenTest(TokenConstants.LPAREN, "("),
+            new TokenTest(TokenConstants.IDENT, "five"),
+            new TokenTest(TokenConstants.COMMA, ","),
+            new TokenTest(TokenConstants.IDENT, "ten"),
+            new TokenTest(TokenConstants.RPAREN, ")"),
+            new TokenTest(TokenConstants.SEMICOLON, ";"),
             // !-/*5;
-		    new tokenTest(TokenConstants.BANG, "!"),
-            new tokenTest(TokenConstants.MINUS, "-"),
-            new tokenTest(TokenConstants.SLASH, "/"),
-            new tokenTest(TokenConstants.ASTERISK, "*"),
-            new tokenTest(TokenConstants.INT, "5"),
-            new tokenTest(TokenConstants.SEMICOLON, ";"),
+		    new TokenTest(TokenConstants.BANG, "!"),
+            new TokenTest(TokenConstants.MINUS, "-"),
+            new TokenTest(TokenConstants.SLASH, "/"),
+            new TokenTest(TokenConstants.ASTERISK, "*"),
+            new TokenTest(TokenConstants.INT, "5"),
+            new TokenTest(TokenConstants.SEMICOLON, ";"),
             // 5 < 10 > 5;
-            new tokenTest(TokenConstants.INT, "5"),
-            new tokenTest(TokenConstants.LT, "<"),
-            new tokenTest(TokenConstants.INT, "10"),
-            new tokenTest(TokenConstants.GT, ">"),
-            new tokenTest(TokenConstants.INT, "5"),
-            new tokenTest(TokenConstants.SEMICOLON, ";"),
+            new TokenTest(TokenConstants.INT, "5"),
+            new TokenTest(TokenConstants.LT, "<"),
+            new TokenTest(TokenConstants.INT, "10"),
+            new TokenTest(TokenConstants.GT, ">"),
+            new TokenTest(TokenConstants.INT, "5"),
+            new TokenTest(TokenConstants.SEMICOLON, ";"),
             // if (5 < 10) {
             // 		return true;
             // } else {
             // 		return false;
             // }
-            new tokenTest(TokenConstants.IF, "if"),
-            new tokenTest(TokenConstants.LPAREN, "("),
-            new tokenTest(TokenConstants.INT, "5"),
-            new tokenTest(TokenConstants.LT, "<"),
-            new tokenTest(TokenConstants.INT, "10"),
-            new tokenTest(TokenConstants.RPAREN, ")"),
-            new tokenTest(TokenConstants.LBRACE, "{"),
-            new tokenTest(TokenConstants.RETURN, "return"),
-            new tokenTest(TokenConstants.TRUE, "true"),
-            new tokenTest(TokenConstants.SEMICOLON, ";"),
-            new tokenTest(TokenConstants.RBRACE, "}"),
-            new tokenTest(TokenConstants.ELSE, "else"),
-            new tokenTest(TokenConstants.LBRACE, "{"),
-            new tokenTest(TokenConstants.RETURN, "return"),
-            new tokenTest(TokenConstants.FALSE, "false"),
-            new tokenTest(TokenConstants.SEMICOLON, ";"),
-            new tokenTest(TokenConstants.RBRACE, "}"),
+            new TokenTest(TokenConstants.IF, "if"),
+            new TokenTest(TokenConstants.LPAREN, "("),
+            new TokenTest(TokenConstants.INT, "5"),
+            new TokenTest(TokenConstants.LT, "<"),
+            new TokenTest(TokenConstants.INT, "10"),
+            new TokenTest(TokenConstants.RPAREN, ")"),
+            new TokenTest(TokenConstants.LBRACE, "{"),
+            new TokenTest(TokenConstants.RETURN, "return"),
+            new TokenTest(TokenConstants.TRUE, "true"),
+            new TokenTest(TokenConstants.SEMICOLON, ";"),
+            new TokenTest(TokenConstants.RBRACE, "}"),
+            new TokenTest(TokenConstants.ELSE, "else"),
+            new TokenTest(TokenConstants.LBRACE, "{"),
+            new TokenTest(TokenConstants.RETURN, "return"),
+            new TokenTest(TokenConstants.FALSE, "false"),
+            new TokenTest(TokenConstants.SEMICOLON, ";"),
+            new TokenTest(TokenConstants.RBRACE, "}"),
             // 10 == 10;
-            new tokenTest(TokenConstants.INT, "10"),
-            new tokenTest(TokenConstants.EQ, "=="),
-            new tokenTest(TokenConstants.INT, "10"),
-            new tokenTest(TokenConstants.SEMICOLON, ";"),
+            new TokenTest(TokenConstants.INT, "10"),
+            new TokenTest(TokenConstants.EQ, "=="),
+            new TokenTest(TokenConstants.INT, "10"),
+            new TokenTest(TokenConstants.SEMICOLON, ";"),
 		    // 10 != 9;
-		    new tokenTest(TokenConstants.INT, "10"),
-            new tokenTest(TokenConstants.NOT_EQ, "!="),
-            new tokenTest(TokenConstants.INT, "9"),
-            new tokenTest(TokenConstants.SEMICOLON, ";"),
+		    new TokenTest(TokenConstants.INT, "10"),
+            new TokenTest(TokenConstants.NOT_EQ, "!="),
+            new TokenTest(TokenConstants.INT, "9"),
+            new TokenTest(TokenConstants.SEMICOLON, ";"),
+            // "foo bar"
+            // "foobar"
+            new TokenTest(TokenConstants.STRING, "foo bar"),
+            new TokenTest(TokenConstants.STRING, "foobar"),
 
-            new tokenTest(TokenConstants.EOF, ""),
+            new TokenTest(TokenConstants.EOF, ""),
         };
 
         var lexer = new JoeLexer(input);

@@ -14,4 +14,5 @@ public static class ObjectConstants
     public const string NULL_OBJECT = "NULL";
     public const string RETURN_OBJECT = "RETURN_VALUE";
     public const string FUNCTION_OBJECT = "FUNCTION";
+    public const string STRING_OBJECT = "STRING";
 }

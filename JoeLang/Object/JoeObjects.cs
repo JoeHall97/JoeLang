@@ -9,6 +9,21 @@ public interface IJoeObject
     string Inspect();
 }
 
+public class JoeString : IJoeObject
+{
+    private readonly string value;
+
+    public JoeString(string value)
+    {
+        this.value = value;
+    }
+
+    public string Value { get => value; }
+
+    public string Type() { return ObjectConstants.STRING_OBJECT; }
+    public string Inspect() { return value; }
+}
+
 public class JoeInteger :IJoeObject
 { 
     private long value;

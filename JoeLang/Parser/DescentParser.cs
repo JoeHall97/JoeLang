@@ -63,11 +63,11 @@ public class DescentParser
             { TokenConstants.LPAREN, ParseGroupExpression },
             { TokenConstants.IF, ParseIfExpression },
             { TokenConstants.FUNCTION, ParseFunctionLiteral },
+            { TokenConstants.STRING, ParseStringLiteral },
         };
 
         infixFunctions = new()
         {
-
             { TokenConstants.PLUS, ParseInfixExpression },
             { TokenConstants.MINUS, ParseInfixExpression },
             { TokenConstants.SLASH, ParseInfixExpression },
@@ -174,6 +174,11 @@ public class DescentParser
     private IExpressionNode? ParseIdentifier()
     {
         return new Identifier(currToken, currToken.Literal);
+    }
+
+    private IExpressionNode? ParseStringLiteral()
+    {
+        return new StringLiteral(currToken, currToken.Literal);
     }
 
     private IExpressionNode? ParseIntegerLiteral()

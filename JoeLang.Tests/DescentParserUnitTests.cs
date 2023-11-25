@@ -214,6 +214,27 @@ public class DescentParserUnitTests
     }
 
     [Fact]
+    public void TestStringLiteralExpression() 
+    {
+        var input = "\"hello world\"";
+
+        var lexer = new JoeLexer(input);
+        var parser = new DescentParser(lexer);
+        var program = parser.ParseProgram();
+
+        var parserErrors = CheckParserErrors(parser);
+        if (parserErrors != null)
+            Assert.Fail(parserErrors);
+
+        Assert.Single(program.Statements);
+        Assert.IsType<AST.ExpressionStatement>(program.Statements[0]);
+        var expressionStatement = (AST.ExpressionStatement)program.Statements[0];
+        Assert.IsType<AST.StringLiteral>(expressionStatement.Expression);
+        var stringLiteral = (AST.StringLiteral)expressionStatement.Expression;
+        Assert.Equal("hello world", stringLiteral.Value);
+    }
+
+    [Fact]
     public void TestParsingPrefixExpression()
     {
         var prefixTests = new PrefixTest[]
