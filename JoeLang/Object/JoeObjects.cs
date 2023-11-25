@@ -9,6 +9,23 @@ public interface IJoeObject
     string Inspect();
 }
 
+public delegate IJoeObject BuiltinFunction(params IJoeObject[] args);
+
+public class JoeBuiltin : IJoeObject
+{
+    private readonly BuiltinFunction function;
+
+    public JoeBuiltin(BuiltinFunction function)
+    {
+        this.function = function;
+    }
+
+    public BuiltinFunction Function { get => function; }
+
+    public string Type() { return ObjectConstants.BUILTIN_OBJECT; }
+    public string Inspect() { return "builtin function"; }
+}
+
 public class JoeString : IJoeObject
 {
     private readonly string value;

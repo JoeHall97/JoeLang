@@ -186,6 +186,35 @@ public class EvaluatorUnitTests
     }
 
     [Fact]
+    public void TestBultinFunction()
+    {
+        var tests = new DynamicTest[]
+        {
+            new("len(\"\")", (long)0),
+            new("len(\"four\")", (long)4),
+            new("len(\"hello world\")", (long)11),
+            new("len(1)", "argument to 'len' not supported. got=INTEGER"),
+            new("len(\"one\", \"two\")", "wrong number of arguments. got=2, want=1")
+        };
+
+        foreach (var test in tests) 
+        {
+            var evaluated = TestEvaluate(test.input);
+
+            switch (test.expected)
+            {
+                case long:
+                    TestIntegerObject(evaluated, (long)test.expected);
+                    break;
+                case string:
+                    Assert.IsType<JoeError>(evaluated);
+                    Assert.Equal(test.expected, ((JoeError)evaluated).Message);
+                    break;
+            }
+        }
+    }
+
+    [Fact]
     public void TestIfElseExpressions()
     {
         var tests = new DynamicTest[]

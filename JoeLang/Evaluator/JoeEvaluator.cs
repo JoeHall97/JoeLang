@@ -206,18 +206,25 @@ public class JoeEvaluator
 
     private IJoeObject? EvaluateIdentifier(AST.Identifier node, JoeEnvironment environment)
     {
+        if (Builtins.builtins.TryGetValue(node.Value, out JoeBuiltin? builtin))
+            return builtin;
+
         return environment.Get(node.Value) ?? new JoeError($"identifier not found: {node.Value}");
     }
 
     private IJoeObject ApplyFunction(IJoeObject function, IJoeObject[] args)
     {
-        if (function is not JoeFunction)
-            return new JoeError($"not a function: {function.Type()}");
-
-        var fn = (JoeFunction)function;
-        var extendedEnvironment = ExtendedFunctionEnvironment(fn, args);
-        var evaluated = Evaluate(fn.Body, extendedEnvironment);
-        return UnwrapReturnValue(evaluated);
+        switch (function)
+        {
+            case JoeFunction fn:
+                var extendedEnvironment = ExtendedFunctionEnvironment(fn, args);
+                var evaluated = Evaluate(fn.Body, extendedEnvironment);
+                return UnwrapReturnValue(evaluated);
+            case JoeBuiltin fn:
+                return fn.Function(args);
+            default:
+                return new JoeError($"not a function: {function.Type()}");
+        }
     }
 
     private JoeEnvironment ExtendedFunctionEnvironment(JoeFunction function, IJoeObject[] args) 
