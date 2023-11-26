@@ -68,6 +68,12 @@ public class JoeLexer
             case '}':
                 token = new JoeToken(TokenConstants.RBRACE, ch.ToString());
                 break;
+            case '[':
+                token = new JoeToken(TokenConstants.LBRACKET, ch.ToString());
+                break;
+            case ']':
+                token = new JoeToken(TokenConstants.RBRACKET, ch.ToString());
+                break;
             case '\0':
                 token = new JoeToken(TokenConstants.EOF, "");
                 break;

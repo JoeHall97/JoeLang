@@ -26,6 +26,21 @@ public class JoeBuiltin : IJoeObject
     public string Inspect() { return "builtin function"; }
 }
 
+public class JoeArray : IJoeObject
+{
+    private readonly IJoeObject[] elements;
+
+    public JoeArray(IJoeObject[] elements)
+    {
+        this.elements = elements;
+    }
+
+    public IJoeObject[] Elements { get => elements; }
+
+    public string Type() { return ObjectConstants.ARRAY_OBJECT; }
+    public string Inspect() { return $"[{string.Join(", ", elements.Select(e => e.Inspect()))}]"; }
+}
+
 public class JoeString : IJoeObject
 {
     private readonly string value;
@@ -43,7 +58,7 @@ public class JoeString : IJoeObject
 
 public class JoeInteger :IJoeObject
 { 
-    private long value;
+    private readonly long value;
 
     public JoeInteger(long value) { this.value = value; }
 
@@ -56,7 +71,7 @@ public class JoeInteger :IJoeObject
 
 public class JoeBoolean : IJoeObject
 {
-    private bool value;
+    private readonly bool value;
 
     public JoeBoolean(bool value) { this.value = value; }
 
@@ -69,7 +84,7 @@ public class JoeBoolean : IJoeObject
 
 public class JoeReturnValue : IJoeObject
 {
-    private IJoeObject value;
+    private readonly IJoeObject value;
 
     public JoeReturnValue(IJoeObject value) { this.value = value; }
 
@@ -82,9 +97,9 @@ public class JoeReturnValue : IJoeObject
 
 public class JoeFunction : IJoeObject
 {
-    private AST.Identifier[] parameters;
-    private AST.BlockStatement body;
-    private JoeEnvironment environment;
+    private readonly AST.Identifier[] parameters;
+    private readonly AST.BlockStatement body;
+    private readonly JoeEnvironment environment;
 
     public JoeFunction(AST.Identifier[] parameters, AST.BlockStatement body, JoeEnvironment environment)
     {
@@ -101,19 +116,7 @@ public class JoeFunction : IJoeObject
 
     public string Inspect()
     {
-        StringBuilder sb = new();
-
-        sb.Append("fn(");
-
-        for (var i = 0; i < parameters.Length - 1; i++)
-            sb.Append(parameters[i].ToString() + ',');
-        sb.Append(parameters[^1].ToString());
-
-        sb.Append(") {\n");
-        sb.Append(body.ToString());
-        sb.Append("\n}");
-
-        return sb.ToString();
+        return $"fn({string.Join(',', parameters.Select(p => p.ToString()))}) {{\n{body}\n}}";
     }
 }
 

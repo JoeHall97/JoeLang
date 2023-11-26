@@ -36,6 +36,19 @@ public class JoeEvaluator
                 return BoolToBooleanObject(booleanObject.Value);
             case AST.StringLiteral stringLiteral:
                 return new JoeString(stringLiteral.Value);
+            case AST.ArrayLiteral arrayLiteral:
+                var arrayElements = EvaluateExpressions(arrayLiteral.Elements, environment);
+                if (arrayElements.Length == 1 && IsError(arrayElements[0]))
+                    return arrayElements[0];
+                return new JoeArray(arrayElements);
+            case AST.IndexExpression indexExpression:
+                var left = Evaluate(indexExpression.Left, environment);
+                if (IsError(left)) 
+                    return left;
+                var index = Evaluate(indexExpression.Index, environment);
+                if (IsError(index))
+                    return index;
+                return EvaluateIndexExpression(left, index);
             case AST.FunctionLiteral functionLiteral: 
                 var parameters = functionLiteral.Parameters;
                 var body = functionLiteral.Body;
@@ -69,6 +82,21 @@ public class JoeEvaluator
         }
 
         return null;
+    }
+
+    private IJoeObject EvaluateIndexExpression(IJoeObject left, IJoeObject index)
+    {
+        if (left is JoeArray array && index is JoeInteger integer)
+            return EvaluateArrayIndexExpression(array, integer);
+        return new JoeError($"index operator not supported: {left.Type()}");
+    }
+
+    private IJoeObject EvaluateArrayIndexExpression(JoeArray array, JoeInteger integer)
+    {
+        var i = integer.Value;
+        var max = array.Elements.Length;
+
+        return i >= 0 && i < max ? array.Elements[i] : EvaluatorConstants.NULL;
     }
 
     private IJoeObject? EvaluateProgram(AST.JoeProgram program, JoeEnvironment environment)

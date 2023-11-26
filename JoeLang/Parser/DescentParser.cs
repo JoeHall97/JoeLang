@@ -18,7 +18,8 @@ public class DescentParser
         SUM,
         PRODUCT,
         PREFIX,
-        CALL
+        CALL,
+        INDEX
     }
 
     private readonly JoeLexer lexer;
@@ -41,6 +42,7 @@ public class DescentParser
         { TokenConstants.SLASH, Precedence.PRODUCT },
         { TokenConstants.ASTERISK, Precedence.PRODUCT },
         { TokenConstants.LPAREN, Precedence.CALL },
+        { TokenConstants.LBRACKET, Precedence.INDEX },
     };
     
     public DescentParser(JoeLexer lexer) 
@@ -64,6 +66,7 @@ public class DescentParser
             { TokenConstants.IF, ParseIfExpression },
             { TokenConstants.FUNCTION, ParseFunctionLiteral },
             { TokenConstants.STRING, ParseStringLiteral },
+            { TokenConstants.LBRACKET, ParseArrayLiteral }
         };
 
         infixFunctions = new()
@@ -77,6 +80,7 @@ public class DescentParser
             { TokenConstants.LT, ParseInfixExpression },
             { TokenConstants.GT, ParseInfixExpression },
             { TokenConstants.LPAREN, ParseCallExpression },
+            { TokenConstants.LBRACKET, ParseIndexExpression },
         };
     }
 
@@ -145,6 +149,19 @@ public class DescentParser
     private void NoPrefixParseFunctionError(string tokenType)
     {
         errors.Add($"no prefix parse function for {tokenType} found");
+    }
+
+    private IExpressionNode? ParseArrayLiteral()
+    {
+        return new ArrayLiteral(currToken, ParseExpressionList(TokenConstants.RBRACKET));
+    }
+
+    private IExpressionNode? ParseIndexExpression(IExpressionNode left) 
+    {
+        NextToken();
+        var token = currToken;
+        var indexExpression = ParseExpression(Precedence.LOWEST);
+        return PeekExpected(TokenConstants.RBRACKET) ? new IndexExpression(token, left, indexExpression) : null;
     }
 
     private IExpressionNode? ParseExpression(Precedence precidence)
@@ -398,38 +415,35 @@ public class DescentParser
         return new InfixExpression(token, left, op, right);
     }
 
-    private IExpressionNode[]? ParseCallArguments()
+    private IExpressionNode[]? ParseExpressionList(string endToken)
     {
-        List<IExpressionNode> arguments = new();
+        List<IExpressionNode> list = new();
 
-        if (PeekTokenIs(TokenConstants.RPAREN))
+        if (PeekTokenIs(endToken))
         {
             NextToken();
-            return arguments.ToArray();
+            return list.ToArray();
         }
 
         NextToken();
 
-        arguments.Add(ParseExpression(Precedence.LOWEST));
+        list.Add(ParseExpression(Precedence.LOWEST));
 
         while (PeekTokenIs(TokenConstants.COMMA)) 
         { 
             NextToken();
             NextToken();
 
-            arguments.Add(ParseExpression(Precedence.LOWEST));
+            list.Add(ParseExpression(Precedence.LOWEST));
         }
-
-        if (!PeekExpected(TokenConstants.RPAREN))
-            return null;
-
-        return arguments.ToArray();
+        
+        return PeekExpected(endToken) ? list.ToArray() : null;
     }
 
     private CallExpression ParseCallExpression(IExpressionNode function)
     {
         JoeToken token = currToken;
-        IExpressionNode[]? arguments = ParseCallArguments();
+        IExpressionNode[]? arguments = ParseExpressionList(TokenConstants.RPAREN);
         return new CallExpression(token, function, arguments);
     }
 }

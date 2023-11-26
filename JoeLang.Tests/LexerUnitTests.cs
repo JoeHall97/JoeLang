@@ -38,6 +38,7 @@ public class LexerUnitTests
 	
 		10 == 10;
 		10 != 9;
+        [1, 2];
         ";
         input += $"\"foo bar\"\n\"foobar\"";
 
@@ -130,6 +131,13 @@ public class LexerUnitTests
 		    new TokenTest(TokenConstants.INT, "10"),
             new TokenTest(TokenConstants.NOT_EQ, "!="),
             new TokenTest(TokenConstants.INT, "9"),
+            new TokenTest(TokenConstants.SEMICOLON, ";"),
+		    // [1, 2];
+		    new TokenTest(TokenConstants.LBRACKET, "["),
+            new TokenTest(TokenConstants.INT, "1"),
+            new TokenTest(TokenConstants.COMMA, ","),
+            new TokenTest(TokenConstants.INT, "2"),
+            new TokenTest(TokenConstants.RBRACKET, "]"),
             new TokenTest(TokenConstants.SEMICOLON, ";"),
             // "foo bar"
             // "foobar"

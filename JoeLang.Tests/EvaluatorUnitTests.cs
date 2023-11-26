@@ -11,8 +11,8 @@ public class EvaluatorUnitTests
     private struct IntegerTest
     {
         public string input;
-        public long expected;
-        public IntegerTest(string input, long expected) 
+        public long? expected;
+        public IntegerTest(string input, long? expected) 
         { 
             this.input = input;
             this.expected = expected;
@@ -49,6 +49,48 @@ public class EvaluatorUnitTests
         {
             this.input = input;
             this.expected = expected;
+        }
+    }
+
+    [Fact]
+    public void TestArrayLiterals()
+    {
+        var input = "[1, 2*2, 3+3]";
+        var evaluated = TestEvaluate(input);
+
+        Assert.IsType<JoeArray>(evaluated);
+        
+        var array = (JoeArray)evaluated;
+        Assert.Equal(3, array.Elements.Length);
+
+        TestIntegerObject(array.Elements[0], 1);
+        TestIntegerObject(array.Elements[1], 4);
+        TestIntegerObject(array.Elements[2], 6);
+    }
+
+    [Fact] public void TestArrayIndexExpressions() 
+    {
+        var tests = new IntegerTest[]
+        {
+            new("[1, 2, 3][0]", 1),
+            new("[1, 2, 3][1]", 2),
+            new("[1, 2, 3][2]", 3),
+            new("var i = 0; [1][i];", 1),
+            new("[1, 2, 3][1 + 1];", 3),
+            new("var array = [1, 2, 3]; array[2];", 3),
+            new("var array = [1, 2, 3]; array[0] + array[1] + array[2];", 6),
+            new("var array = [1, 2, 3]; var i = array[0]; array[i]", 2),
+            new("[1, 2, 3][3]", null),
+            new("[1, 2, 3][-1]", null)
+        };
+
+        foreach (var test in tests)
+        {
+            var evaluated = TestEvaluate(test.input);
+            if (test.expected != null)
+                TestIntegerObject(evaluated, test.expected.GetValueOrDefault());
+            else
+                TestNullObject(evaluated);
         }
     }
 
@@ -99,7 +141,7 @@ public class EvaluatorUnitTests
         foreach (var test in tests)
         {
             var evaluated = TestEvaluate(test.input);
-            TestIntegerObject(evaluated, test.expected);
+            TestIntegerObject(evaluated, test.expected.GetValueOrDefault());
         }
     }
 
@@ -128,7 +170,7 @@ public class EvaluatorUnitTests
         foreach (var test in tests) 
         {
             var evaluated = TestEvaluate(test.input);
-            TestIntegerObject(evaluated, test.expected);
+            TestIntegerObject(evaluated, test.expected.GetValueOrDefault());
         }
     }
 
@@ -283,7 +325,7 @@ public class EvaluatorUnitTests
         foreach (var test in tests) 
         {
             var evaluated = TestEvaluate(test.input);
-            TestIntegerObject(evaluated, test.expected);
+            TestIntegerObject(evaluated, test.expected.GetValueOrDefault());
         }
     }
 
@@ -342,7 +384,7 @@ public class EvaluatorUnitTests
         };
 
         foreach (var test in tests) 
-            TestIntegerObject(TestEvaluate(test.input), test.expected);
+            TestIntegerObject(TestEvaluate(test.input), test.expected.GetValueOrDefault());
     }
 
     private IJoeObject? TestEvaluate(string input)

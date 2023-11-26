@@ -314,31 +314,33 @@ public class DescentParserUnitTests
     {
         var operatorPrecedenceTests = new OperatorPrecedenceTest[]
         {
-            new OperatorPrecedenceTest("-a * b", "((-a) * b)"),
-            new OperatorPrecedenceTest("!-a", "(!(-a))"),
-            new OperatorPrecedenceTest("a + b + c", "((a + b) + c)"),
-            new OperatorPrecedenceTest("a + b - c", "((a + b) - c)"),
-            new OperatorPrecedenceTest("a * b * c", "((a * b) * c)"),
-            new OperatorPrecedenceTest("a * b / c", "((a * b) / c)"),
-            new OperatorPrecedenceTest("a + b / c", "(a + (b / c))"),
-            new OperatorPrecedenceTest("a + b * c + d / e - f", "(((a + (b * c)) + (d / e)) - f)"),
-            new OperatorPrecedenceTest("3 + 4; -5 * 5", "(3 + 4)((-5) * 5)"),
-            new OperatorPrecedenceTest("5 > 4 == 3 < 4", "((5 > 4) == (3 < 4))"),
-            new OperatorPrecedenceTest("5 < 4 != 3 > 4", "((5 < 4) != (3 > 4))"),
-            new OperatorPrecedenceTest("3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"),
-            new OperatorPrecedenceTest("true", "true"),
-            new OperatorPrecedenceTest("false", "false"),
-            new OperatorPrecedenceTest("3 > 5 == false",  "((3 > 5) == false)"),
-            new OperatorPrecedenceTest("3 < 5 == true", "((3 < 5) == true)"),
-            new OperatorPrecedenceTest("1 + (2 + 3) + 4", "((1 + (2 + 3)) + 4)"),
-            new OperatorPrecedenceTest("(5 + 5) * 2", "((5 + 5) * 2)"),
-            new OperatorPrecedenceTest("2 / (5 + 5)", "(2 / (5 + 5))"),
-            new OperatorPrecedenceTest("(5 + 5) * 2 * (5 + 5)", "(((5 + 5) * 2) * (5 + 5))"),
-            new OperatorPrecedenceTest("-(5 + 5)", "(-(5 + 5))"),
-            new OperatorPrecedenceTest("!(true == true)", "(!(true == true))"),
-            new OperatorPrecedenceTest("a + add(b * c) + d", "((a + add((b * c))) + d)"),
-            new OperatorPrecedenceTest("add(a, b, 1, 2 * 3, 4 + 5, add(6, 7 * 8))", "add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)))"),
-            new OperatorPrecedenceTest("add(a + b + c * d / f + g)", "add((((a + b) + ((c * d) / f)) + g))"),
+            new("-a * b", "((-a) * b)"),
+            new("!-a", "(!(-a))"),
+            new("a + b + c", "((a + b) + c)"),
+            new("a + b - c", "((a + b) - c)"),
+            new("a * b * c", "((a * b) * c)"),
+            new("a * b / c", "((a * b) / c)"),
+            new("a + b / c", "(a + (b / c))"),
+            new("a + b * c + d / e - f", "(((a + (b * c)) + (d / e)) - f)"),
+            new("3 + 4; -5 * 5", "(3 + 4)((-5) * 5)"),
+            new("5 > 4 == 3 < 4", "((5 > 4) == (3 < 4))"),
+            new("5 < 4 != 3 > 4", "((5 < 4) != (3 > 4))"),
+            new("3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"),
+            new("true", "true"),
+            new("false", "false"),
+            new("3 > 5 == false",  "((3 > 5) == false)"),
+            new("3 < 5 == true", "((3 < 5) == true)"),
+            new("1 + (2 + 3) + 4", "((1 + (2 + 3)) + 4)"),
+            new("(5 + 5) * 2", "((5 + 5) * 2)"),
+            new("2 / (5 + 5)", "(2 / (5 + 5))"),
+            new("(5 + 5) * 2 * (5 + 5)", "(((5 + 5) * 2) * (5 + 5))"),
+            new("-(5 + 5)", "(-(5 + 5))"),
+            new("!(true == true)", "(!(true == true))"),
+            new("a + add(b * c) + d", "((a + add((b * c))) + d)"),
+            new("add(a, b, 1, 2 * 3, 4 + 5, add(6, 7 * 8))", "add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)))"),
+            new("add(a + b + c * d / f + g)", "add((((a + b) + ((c * d) / f)) + g))"),
+            new("a * [1, 2, 3, 4][b * c] * d", "((a * ([1, 2, 3, 4][(b * c)])) * d)"),
+            new("add(a * b[2], b[1], 2 * [1, 2][1])", "add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))")
         };
 
         foreach (var test in operatorPrecedenceTests)
@@ -360,6 +362,56 @@ public class DescentParserUnitTests
                 Console.WriteLine(ex);
             }
         }
+    }
+
+    [Fact]
+    public void TestParsingArrayLiterals()
+    {
+        var input = "[1,2,3*3,4+4]";
+
+        var lexer = new JoeLexer(input);
+        var parser = new DescentParser(lexer);
+        var program = parser.ParseProgram();
+
+        var parserErrors = CheckParserErrors(parser);
+        if (parserErrors != null) 
+            Assert.Fail(parserErrors);
+
+        Assert.Single(program.Statements);
+        Assert.IsType<ExpressionStatement>(program.Statements[0]);
+        var statement = (ExpressionStatement)program.Statements[0];
+        Assert.IsType<ArrayLiteral>(statement.Expression);
+        var arrayLiteral = (ArrayLiteral)statement.Expression;
+
+        Assert.Equal(4, arrayLiteral.Elements?.Length);
+
+        TestIntegerLiteral(arrayLiteral.Elements[0], 1);
+        TestIntegerLiteral(arrayLiteral.Elements[1], 2);
+        TestInfixExpression(arrayLiteral.Elements[2], "*", 3, 3);
+        TestInfixExpression(arrayLiteral.Elements[3], "+", 4, 4);
+    }
+
+    [Fact]
+    public void TestParsingIndexExpressions() 
+    {
+        var input = "array[1 + 1]";
+
+        var lexer = new JoeLexer(input);
+        var parser = new DescentParser(lexer);
+        var program = parser.ParseProgram();
+
+        var parserErrors = CheckParserErrors(parser);
+        if (parserErrors != null) 
+            Assert.Fail(parserErrors);
+
+        Assert.Single(program.Statements);
+        Assert.IsType<ExpressionStatement>(program.Statements[0]);
+        var statement = (ExpressionStatement)program.Statements[0];
+        Assert.IsType<IndexExpression>(statement.Expression);
+        var indexExpression = (IndexExpression)statement.Expression;
+
+        TestIdentifier(indexExpression.Left, "array");
+        TestInfixExpression(indexExpression.Index, "+", 1, 1);
     }
 
     [Fact]

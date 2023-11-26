@@ -101,21 +101,46 @@ public class CallExpression : IExpressionNode
 
     public string TokenLiteral() { return token.Literal; }
 
-    public override string ToString()
+    public override string ToString() { return $"{function.ToString()}({string.Join(", ", arguments.Select(a => a.ToString()))})"; }
+}
+
+public class ArrayLiteral : IExpressionNode
+{ 
+    private readonly JoeToken token;
+    private readonly IExpressionNode[]? elements;
+
+    public ArrayLiteral(JoeToken token, IExpressionNode[]? elements)
     {
-        StringBuilder builder = new();
-        var args = new string[arguments.Length];
-
-        for (int i=0; i<arguments.Length; i++)
-            args[i] = arguments[i].ToString();
-
-        builder.Append(function.ToString());
-        builder.Append('(');
-        builder.Append(string.Join(", ", args));
-        builder.Append(')');
-
-        return builder.ToString();
+        this.token = token;
+        this.elements = elements;
     }
+
+    public JoeToken Token { get => token; }
+    public IExpressionNode[]? Elements { get => elements; }
+
+    public string TokenLiteral() { return token.Literal; }
+    public override string ToString() { return $"[{string.Join(", ", elements.Select(s => s.ToString()))}]"; }
+}
+
+public class IndexExpression : IExpressionNode
+{
+    private readonly JoeToken token;
+    private readonly IExpressionNode left;
+    private readonly IExpressionNode index;
+
+    public IndexExpression(JoeToken token, IExpressionNode left, IExpressionNode index)
+    {
+        this.token = token;
+        this.left = left;
+        this.index = index;
+    }
+
+    public JoeToken Token { get => token; }
+    public IExpressionNode Left { get => left; }
+    public IExpressionNode Index { get => index; }
+
+    public string TokenLiteral() { return token.Literal; }
+    public override string ToString() { return $"({left.ToString()}[{index.ToString()}])"; }
 }
 
 public class BlockStatement : IStatementNode
@@ -136,15 +161,7 @@ public class BlockStatement : IStatementNode
 
     public string TokenLiteral() { return token.Literal; }
 
-    public override string ToString()
-    {
-        StringBuilder builder = new();
-
-        foreach (var statement in statements)
-            builder.Append(statement.ToString());
-
-        return builder.ToString();
-    }
+    public override string ToString() { return string.Join("", statements.Select(s => s.ToString())); }
 }
 
 public class FunctionLiteral : IExpressionNode
@@ -174,19 +191,7 @@ public class FunctionLiteral : IExpressionNode
 
     public override string ToString() 
     {
-        StringBuilder builder = new();
-
-        var parameters = new string[this.parameters.Length];
-        for (int i=0; i<parameters.Length; i++)
-            parameters[i] = this.parameters[i].ToString();
-
-        builder.Append(TokenLiteral());
-        builder.Append('(');
-        builder.Append(string.Join(", ", parameters));
-        builder.Append(')');
-        builder.Append(body.ToString());
-        
-        return builder.ToString();
+        return $"{TokenLiteral()}({string.Join(", ", parameters.Select(p => p.ToString()))}){body}";
     }
 }
 
@@ -222,23 +227,7 @@ public class IfExpression : IExpressionNode
 
     public string TokenLiteral() { return token.Literal; }
 
-    public override string ToString()
-    {
-        StringBuilder builder = new();
-
-        builder.Append("if");
-        builder.Append(condition.ToString());
-        builder.Append(' ');
-        builder.Append(consequence.ToString());
-
-        if (alternative != null)
-        {
-            builder.Append("else");
-            builder.Append(alternative.ToString());
-        }
-
-        return builder.ToString();
-    }
+    public override string ToString() { return alternative == null ? $"if{condition} {consequence}" : $"if{condition} {consequence}else{alternative}"; }
 }
 
 public class Boolean : IExpressionNode
@@ -287,21 +276,7 @@ public class VarStatement : IStatementNode
 
     public string TokenLiteral() { return token.Literal; }
 
-    public override string ToString()
-    {
-        StringBuilder builder = new();
-
-        builder.Append(TokenLiteral() + " ");
-        builder.Append(name.ToString());
-        builder.Append(" = ");
-
-        if (value != null)
-            builder.Append(value.ToString());
-
-        builder.Append(';');
-
-        return builder.ToString();
-    }
+    public override string ToString() { return $"{TokenLiteral()} {name} = {value};"; }
 }
 
 public class ReturnStatement : IStatementNode
@@ -322,19 +297,7 @@ public class ReturnStatement : IStatementNode
 
     public string TokenLiteral() { return token.Literal; }
 
-    public override string ToString()
-    {
-        StringBuilder builder = new();
-
-        builder.Append(TokenLiteral() + " ");
-
-        if (returnValue != null)
-            builder.Append(returnValue.ToString());
-
-        builder.Append(';');
-
-        return builder.ToString();
-    }
+    public override string ToString() { return $"{TokenLiteral()} {returnValue};"; }
 }
 
 public class ExpressionStatement : IStatementNode
@@ -355,10 +318,7 @@ public class ExpressionStatement : IStatementNode
 
     public string TokenLiteral() { return token.Literal; }
 
-    public override string ToString() 
-    {
-        return expression != null ? expression.ToString() : "";
-    }
+    public override string ToString() { return expression != null ? expression.ToString() : ""; }
 }
 
 public class IntegerLiteral : IExpressionNode
@@ -425,17 +385,7 @@ public class PrefixExpression : IExpressionNode
 
     public string TokenLiteral() { return token.Literal; }
 
-    public override string ToString()
-    {
-        StringBuilder builder = new();
-
-        builder.Append('(');
-        builder.Append(op);
-        builder.Append(right.ToString());
-        builder.Append(')');
-
-        return builder.ToString();
-    }
+    public override string ToString() { return $"({op}{right})"; }
 }
 
 public class InfixExpression : IExpressionNode
@@ -470,16 +420,5 @@ public class InfixExpression : IExpressionNode
 
     public string TokenLiteral() { return token.Literal; }
 
-    public override string ToString()
-    {
-        StringBuilder builder = new();
-
-        builder.Append('(');
-        builder.Append(left.ToString());
-        builder.Append($" {op} ");
-        builder.Append(right.ToString());
-        builder.Append(')');
-
-        return builder.ToString();
-    }
+    public override string ToString() { return $"({left} {op} {right})"; }
 }
