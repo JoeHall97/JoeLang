@@ -40,7 +40,8 @@ public class LexerUnitTests
 		10 != 9;
         [1, 2];
         ";
-        input += $"\"foo bar\"\n\"foobar\"";
+        input += "\"foo bar\"\n\"foobar\"";
+        input += "{\"foo\": \"bar\"}";
 
         var tests = new TokenTest[]
         {
@@ -143,6 +144,12 @@ public class LexerUnitTests
             // "foobar"
             new TokenTest(TokenConstants.STRING, "foo bar"),
             new TokenTest(TokenConstants.STRING, "foobar"),
+            // {\"foo\": \"bar\"}
+		    new TokenTest(TokenConstants.LBRACE, "{"),
+            new TokenTest(TokenConstants.STRING, "foo"),
+            new TokenTest(TokenConstants.COLON, ":"),
+            new TokenTest(TokenConstants.STRING, "bar"),
+            new TokenTest(TokenConstants.RBRACE, "}"),
 
             new TokenTest(TokenConstants.EOF, ""),
         };

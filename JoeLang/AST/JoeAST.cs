@@ -55,6 +55,24 @@ public class JoeProgram : INode
     }
 }
 
+public class HashLiteral : IExpressionNode
+{
+    private readonly JoeToken token;
+    private Dictionary<IExpressionNode, IExpressionNode> pairs;
+
+    public HashLiteral(JoeToken token, Dictionary<IExpressionNode, IExpressionNode> pairs)
+    {
+        this.token = token;
+        this.pairs = pairs;
+    }
+
+    public JoeToken Token { get => token; }
+    public Dictionary<IExpressionNode, IExpressionNode> Pairs { get => pairs; }
+
+    public string TokenLiteral() { return token.Literal; }
+    public override string ToString() { return $"{{{string.Join(", ", pairs.Select(p => p.Key.ToString() + ":" + p.Value.ToString()))}}}"; }
+}
+
 public class Identifier : IExpressionNode
 {
     private readonly JoeToken token;

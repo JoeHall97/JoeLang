@@ -3,6 +3,7 @@ using JoeLang.Evaluator;
 using JoeLang.Lexer;
 using JoeLang.Object;
 using JoeLang.Parser;
+using System.IO.Pipes;
 
 namespace JoeLang.Tests;
 
@@ -49,6 +50,69 @@ public class EvaluatorUnitTests
         {
             this.input = input;
             this.expected = expected;
+        }
+    }
+
+    [Fact]
+    public void TestHashLiterals()
+    {
+        var input = """
+         var two = "two";
+         {
+             "one": 10 - 9,
+             two: 1 + 1,
+             "thr" + "ee": 6 / 2,
+             4: 4,
+             true: 5,
+             false: 6
+         }
+         """;
+
+        var evaluated = TestEvaluate(input);
+        Assert.IsType<JoeHash>(evaluated);
+        var results = (JoeHash)evaluated;
+
+        var expected = new Dictionary<HashKey, long>()
+        {
+            { (new JoeString("one")).HashKey(), 1 },
+            { (new JoeString("two")).HashKey(), 2 },
+            { (new JoeString("three")).HashKey(), 3 },
+            { (new JoeInteger(4)).HashKey(), 4 },
+            { EvaluatorConstants.TRUE.HashKey(), 5 },
+            { EvaluatorConstants.FALSE.HashKey(), 6 },
+        };
+
+        Assert.Equal(expected.Count, results.Pairs.Count);
+
+        foreach (var pair in expected) 
+        {
+            if (results.Pairs.TryGetValue(pair.Key, out HashPair hashPair))
+                TestIntegerObject(hashPair.value, pair.Value);
+            else
+                Assert.Fail($"no pair for given key: {pair.Key}");
+        }
+    }
+
+    [Fact]
+    public void TestHashIndexExpressions()
+    {
+        var tests = new DynamicTest[]
+        {
+            new("{\"foo\": 5}[\"foo\"]", (long)5),
+            new("{\"foo\": 5}[\"bar\"]", null),
+            new("var key = \"foo\"; {\"foo\": 5}[key]", (long)5),
+            new("{}[\"foo\"]", null),
+            new("{5: 5}[5]", (long)5),
+            new("{true: 5}[true]", (long)5),
+        };
+
+        foreach (var test in tests)
+        {
+            var evaluated = TestEvaluate(test.input);
+            if (test.expected is long expectedLong)
+                TestIntegerObject(evaluated, expectedLong);
+            else
+                TestNullObject(evaluated);
         }
     }
 
@@ -360,7 +424,8 @@ public class EvaluatorUnitTests
 			"unknown operator: BOOLEAN + BOOLEAN"),
             new("foobar",
             "identifier not found: foobar"),
-            new("\"Hello\" - \"World\"", "unknown operator: STRING - STRING")
+            new("\"Hello\" - \"World\"", "unknown operator: STRING - STRING"),
+            new("{\"name\": \"Monkey\"}[fn(x) { x }];", "unusable as hash key: FUNCTION")
         };
 
         foreach (var test in tests) 

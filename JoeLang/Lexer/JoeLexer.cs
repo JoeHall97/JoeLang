@@ -53,6 +53,9 @@ public class JoeLexer
             case ';':
                 token = new JoeToken(TokenConstants.SEMICOLON, ch.ToString());
                 break;
+            case ':':
+                token = new JoeToken(TokenConstants.COLON, ch.ToString());
+                break;
             case ',':
                 token = new JoeToken(TokenConstants.COMMA, ch.ToString());
                 break;

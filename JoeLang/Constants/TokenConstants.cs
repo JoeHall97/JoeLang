@@ -31,6 +31,7 @@ public static class TokenConstants
     public const string RBRACE = "}";
     public const string LBRACKET = "[";
     public const string RBRACKET = "]";
+    public const string COLON = ":";
 
     // Keywords
     public const string FUNCTION = "FUNCTION";

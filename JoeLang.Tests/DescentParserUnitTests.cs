@@ -100,6 +100,44 @@ public class DescentParserUnitTests
     }
 
     [Fact]
+    public void TestParsingHashLiteralStringKeys()
+    {
+        var input = "{\"one\": 1, \"two\": 2, \"three\": 3}";
+
+        var lexer = new JoeLexer(input);
+        var parser = new DescentParser(lexer);
+        var program = parser.ParseProgram();
+
+        var parserErrors = CheckParserErrors(parser);
+        if (parserErrors != null)
+            Assert.Fail(parserErrors);
+
+        Assert.Single(program.Statements);
+        Assert.IsType<AST.ExpressionStatement>(program.Statements[0]);
+        var statement = (AST.ExpressionStatement)program.Statements[0];
+
+        Assert.IsType<AST.HashLiteral>(statement.Expression);
+        var hashLiteral = (AST.HashLiteral)statement.Expression;
+
+        Assert.Equal(3, hashLiteral.Pairs.Count);
+
+        var expected = new Dictionary<string, long>()
+        {
+            { "one", 1 },
+            { "two", 2 },
+            { "three", 3 }
+        };
+
+        foreach (var keyValuePair in hashLiteral.Pairs)
+        {
+            Assert.IsType<StringLiteral>(keyValuePair.Key);
+            var key = (StringLiteral)keyValuePair.Key;
+            var expectedValue = expected[key.ToString()];
+            TestIntegerLiteral(keyValuePair.Value, expectedValue);
+        }
+    }
+
+    [Fact]
     public void TestReturnStatement()
     {
         var tests = new ReturnTest[]

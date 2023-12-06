@@ -12,6 +12,7 @@ public static class Builtins
         { "last", new JoeBuiltin(LastBuiltin) },
         { "rest", new JoeBuiltin(RestBuiltin) },
         { "push", new JoeBuiltin(PushBuiltin) },
+        { "puts", new JoeBuiltin(PutsBuiltin) },
     };
 
     private static IJoeObject LenBuiltin(params IJoeObject[] args)
@@ -87,5 +88,12 @@ public static class Builtins
         newElements[length] = args[1];
 
         return new JoeArray(newElements);
+    }
+
+    private static IJoeObject PutsBuiltin(params IJoeObject[] args) 
+    { 
+        foreach (var a in args)
+            Console.WriteLine(a.Inspect());
+        return EvaluatorConstants.NULL;
     }
 }

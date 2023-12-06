@@ -17,4 +17,5 @@ public static class ObjectConstants
     public const string STRING_OBJECT = "STRING";
     public const string BUILTIN_OBJECT = "BUILTIN";
     public const string ARRAY_OBJECT = "ARRAY";
+    public const string HASH_OBJECT = "HASH";
 }

@@ -1,5 +1,7 @@
-﻿using JoeLang.Constants;
+﻿using JoeLang.AST;
+using JoeLang.Constants;
 using JoeLang.Object;
+using System.Formats.Asn1;
 using System.Net;
 
 namespace JoeLang.Evaluator;
@@ -79,15 +81,74 @@ public class JoeEvaluator
                 return EvaluateIfExpression(ifExpression, environment);
             case AST.Identifier identifier:
                 return EvaluateIdentifier(identifier, environment);
+            case AST.HashLiteral hashLiteral:
+                return EvaluateHashLiteral(hashLiteral, environment);
         }
 
         return null;
+    }
+
+    private IJoeObject? EvaluateHashLiteral(HashLiteral hashLiteral, JoeEnvironment environment)
+    {
+        var pairs = new Dictionary<HashKey, HashPair>();
+
+        foreach (var keyValuePair in hashLiteral.Pairs) 
+        { 
+            var key = Evaluate(keyValuePair.Key, environment);
+            if (IsError(key))
+                return key;
+
+            var value = Evaluate(keyValuePair.Value, environment);
+            if (IsError(value))
+                return value;
+
+            // need to convert to explict joestring, joebool, or other hashable object
+            // I should figure out how to do this check better
+            //if (typeof(IHashable).IsAssignableFrom(key.GetType()))
+            //    return new JoeError($"unusable as hash key: {key.Type()}");
+            HashKey? hashKey = null;
+            if (key is JoeString joeString)
+                hashKey = joeString.HashKey();
+            else if (key is JoeBoolean joeBoolean)
+                hashKey = joeBoolean.HashKey();
+            else if (key is JoeInteger joeInteger)
+                hashKey = joeInteger.HashKey();
+            
+            if (hashKey == null)
+                return new JoeError($"unusable as hash key: {key.Type()}");
+            
+            pairs[hashKey.GetValueOrDefault()] = new HashPair(key, value);
+        }
+
+        return new JoeHash(pairs);
+    }
+
+    private IJoeObject EvaluateHashIndexExpression(IJoeObject hash, IJoeObject index)
+    {
+        var hashObject = (JoeHash)hash;
+
+        HashKey? hashKey = null;
+        if (index is JoeString joeString)
+            hashKey = joeString.HashKey();
+        else if (index is JoeBoolean joeBoolean)
+            hashKey = joeBoolean.HashKey();
+        else if (index is JoeInteger joeInteger)
+            hashKey = joeInteger.HashKey();
+
+        if (hashKey == null)
+            return new JoeError($"unusable as hash key: {index.Type()}");
+
+        if (hashObject.Pairs.TryGetValue(hashKey.GetValueOrDefault(), out HashPair hashPair))
+            return hashPair.value;
+        return EvaluatorConstants.NULL;
     }
 
     private IJoeObject EvaluateIndexExpression(IJoeObject left, IJoeObject index)
     {
         if (left is JoeArray array && index is JoeInteger integer)
             return EvaluateArrayIndexExpression(array, integer);
+        else if (left is JoeHash)
+            return EvaluateHashIndexExpression(left, index);
         return new JoeError($"index operator not supported: {left.Type()}");
     }
 

@@ -1,6 +1,7 @@
 ﻿using JoeLang.AST;
 using JoeLang.Constants;
 using JoeLang.Lexer;
+using JoeLang.Object;
 using JoeLang.Token;
 
 namespace JoeLang.Parser;
@@ -66,7 +67,8 @@ public class DescentParser
             { TokenConstants.IF, ParseIfExpression },
             { TokenConstants.FUNCTION, ParseFunctionLiteral },
             { TokenConstants.STRING, ParseStringLiteral },
-            { TokenConstants.LBRACKET, ParseArrayLiteral }
+            { TokenConstants.LBRACKET, ParseArrayLiteral },
+            { TokenConstants.LBRACE, ParseHashLiteral }
         };
 
         infixFunctions = new()
@@ -102,6 +104,31 @@ public class DescentParser
         }
 
         return new JoeProgram(statements.ToArray());
+    }
+
+    private IExpressionNode? ParseHashLiteral()
+    {
+        var token = currToken;
+        var pairs = new Dictionary<IExpressionNode, IExpressionNode>();
+
+        while (!PeekTokenIs(TokenConstants.RBRACE))
+        {
+            NextToken();
+            var key = ParseExpression(Precedence.LOWEST);
+
+            if (!PeekExpected(TokenConstants.COLON))
+                return null;
+
+            NextToken();
+            var value = ParseExpression(Precedence.LOWEST);
+
+            pairs[key] = value;
+
+            if (!PeekTokenIs(TokenConstants.RBRACE) && !PeekExpected(TokenConstants.COMMA))
+                return null;
+        }
+
+        return PeekExpected(TokenConstants.RBRACE) ? new HashLiteral(token, pairs) : null;
     }
 
     private void NextToken()

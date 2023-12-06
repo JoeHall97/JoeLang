@@ -1,4 +1,5 @@
 ﻿using JoeLang.Constants;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace JoeLang.Object;
@@ -9,7 +10,62 @@ public interface IJoeObject
     string Inspect();
 }
 
+public interface IHashable
+{
+    HashKey HashKey();
+}
+
 public delegate IJoeObject BuiltinFunction(params IJoeObject[] args);
+
+public struct HashKey
+{
+    public readonly string objectType;
+    public readonly long value;
+
+    public HashKey(string objectType, long value)
+    {
+        this.objectType = objectType;
+        this.value = value;
+    }
+}
+
+public struct HashPair
+{
+    public readonly IJoeObject key;
+    public readonly IJoeObject value;
+
+    public HashPair(IJoeObject key, IJoeObject value)
+    {
+        this.key = key;
+        this.value = value;
+    }
+}
+
+public class JoeHash : IJoeObject
+{
+    private Dictionary<HashKey,HashPair> pairs;
+
+    public JoeHash(Dictionary<HashKey, HashPair> pairs)
+    {
+        this.pairs = pairs;
+    }
+
+    public Dictionary<HashKey,HashPair> Pairs { get => pairs; }
+
+    public string Type() { return ObjectConstants.HASH_OBJECT; }
+    public string Inspect() 
+    { 
+        StringBuilder sb = new();
+
+        sb.Append('{');
+        foreach (var p in pairs.Values) 
+            sb.Append($"{p.key.Inspect()}: {p.value.Inspect()}");
+        sb.Append('}');
+
+        return sb.ToString();
+    }
+}
+
 
 public class JoeBuiltin : IJoeObject
 {
@@ -54,9 +110,17 @@ public class JoeString : IJoeObject
 
     public string Type() { return ObjectConstants.STRING_OBJECT; }
     public string Inspect() { return value; }
+    public HashKey HashKey()
+    {
+        var hash = SHA1.HashData(Encoding.ASCII.GetBytes(value));
+        long hashValue = 0;
+        foreach (var h in hash)
+            hashValue += h;
+        return new HashKey(Type(), hashValue);
+    }
 }
 
-public class JoeInteger :IJoeObject
+public class JoeInteger :IJoeObject, IHashable
 { 
     private readonly long value;
 
@@ -65,11 +129,11 @@ public class JoeInteger :IJoeObject
     public long Value { get => value; }
 
     public string Type() { return ObjectConstants.INT_OBJECT; }
-
     public string Inspect() { return value.ToString(); }
+    public HashKey HashKey() { return new HashKey(Type(), value); }
 }
 
-public class JoeBoolean : IJoeObject
+public class JoeBoolean : IJoeObject, IHashable
 {
     private readonly bool value;
 
@@ -78,8 +142,8 @@ public class JoeBoolean : IJoeObject
     public bool Value { get => value; }
 
     public string Type() { return ObjectConstants.BOOL_OBJECT; }
-
     public string Inspect() { return value.ToString(); }
+    public HashKey HashKey() { return new HashKey(Type(), value ? 1 : 0); }
 }
 
 public class JoeReturnValue : IJoeObject
