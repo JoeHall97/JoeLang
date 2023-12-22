@@ -1,10 +1,10 @@
 build:
-	clang++ -std=c++11 main.cpp lexer/lexer.cpp tokens/token.cpp -o bin/JoeLang
+	clang++ -std=c++17 main.cpp lexer/lexer.cpp tokens/token.cpp ast/ast.cpp -o bin/JoeLang
 build_gcc:
-	g++ -std=c++11 main.cpp lexer/lexer.cpp tokens/token.cpp -o bin/JoeLang
+	g++ -std=c++17 main.cpp lexer/lexer.cpp tokens/token.cpp ast/ast.cpp -o bin/JoeLang
 build_and_test:
-	clang++ -std=c++11 tests.cpp lexer/lexer.cpp tokens/token.cpp -o bin/JoeLangTests
+	clang++ -std=c++17 tests.cpp lexer/lexer.cpp tokens/token.cpp ast/ast.cpp -o bin/JoeLangTests
 	./JoeLangTests
 build_and_test_gcc:
-	g++ -std=c++11 tests.cpp lexer/lexer.cpp tokens/token.cpp -o bin/JoeLangTests
+	g++ -std=c++17 tests.cpp lexer/lexer.cpp tokens/token.cpp ast/ast.cpp -o bin/JoeLangTests
 	./JoeLangTests
