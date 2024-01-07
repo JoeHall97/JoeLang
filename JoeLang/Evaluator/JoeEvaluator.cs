@@ -1,8 +1,6 @@
 ﻿using JoeLang.AST;
 using JoeLang.Constants;
 using JoeLang.Object;
-using System.Formats.Asn1;
-using System.Net;
 
 namespace JoeLang.Evaluator;
 
@@ -258,14 +256,16 @@ public class JoeEvaluator
     {
         return right switch
         {
-            JoeBoolean => right == EvaluatorConstants.TRUE ? EvaluatorConstants.FALSE : EvaluatorConstants.TRUE,
+            JoeBoolean => right == EvaluatorConstants.TRUE ? 
+                EvaluatorConstants.FALSE : EvaluatorConstants.TRUE,
             JoeNull    => EvaluatorConstants.TRUE,
             _          => EvaluatorConstants.FALSE
 
         };
     }
 
-    private IJoeObject[] EvaluateExpressions(AST.IExpressionNode[] expressions, JoeEnvironment environment)
+    private IJoeObject[] EvaluateExpressions(AST.IExpressionNode[] expressions, 
+        JoeEnvironment environment)
     {
         var result = new List<IJoeObject>();
 
@@ -280,7 +280,8 @@ public class JoeEvaluator
         return result.ToArray();
     }
 
-    private IJoeObject? EvaluateIfExpression(AST.IfExpression ifExpression, JoeEnvironment environment)
+    private IJoeObject? EvaluateIfExpression(AST.IfExpression ifExpression, 
+        JoeEnvironment environment)
     {
         var condition = Evaluate(ifExpression.Condition, environment);
         if (IsError(condition)) 

@@ -1,7 +1,6 @@
 ﻿using JoeLang.AST;
 using JoeLang.Constants;
 using JoeLang.Lexer;
-using JoeLang.Object;
 using JoeLang.Token;
 
 namespace JoeLang.Parser;
@@ -188,12 +187,15 @@ public class DescentParser
         NextToken();
         var token = currToken;
         var indexExpression = ParseExpression(Precedence.LOWEST);
-        return PeekExpected(TokenConstants.RBRACKET) ? new IndexExpression(token, left, indexExpression) : null;
+        return PeekExpected(TokenConstants.RBRACKET) ? 
+            new IndexExpression(token, left, indexExpression) : null;
     }
 
     private IExpressionNode? ParseExpression(Precedence precidence)
     {
-        var foundParseFunction = prefixFunctions.TryGetValue(currToken.Type, out PrefixParseFunction? prefixParseFunction);
+        var foundParseFunction = prefixFunctions.TryGetValue(currToken.Type, 
+            out PrefixParseFunction? prefixParseFunction);
+        
         if (!foundParseFunction) 
         {
             NoPrefixParseFunctionError(currToken.Type);

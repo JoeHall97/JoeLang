@@ -1,6 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.IO;
-using JoeLang.AST;
+﻿using JoeLang.AST;
 using JoeLang.Evaluator;
 using JoeLang.Lexer;
 using JoeLang.Object;
@@ -22,6 +20,7 @@ class JoeLang
             JoeREPL.Start();
             return;
         }
+
         EvaluateFile(args[0]);
     }
 

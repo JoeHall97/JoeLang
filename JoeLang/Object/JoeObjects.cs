@@ -94,7 +94,10 @@ public class JoeArray : IJoeObject
     public IJoeObject[] Elements { get => elements; }
 
     public string Type() { return ObjectConstants.ARRAY_OBJECT; }
-    public string Inspect() { return $"[{string.Join(", ", elements.Select(e => e.Inspect()))}]"; }
+    public string Inspect() 
+    { 
+        return $"[{string.Join(", ", elements.Select(e => e.Inspect()))}]"; 
+    }
 }
 
 public class JoeString : IJoeObject
@@ -165,7 +168,8 @@ public class JoeFunction : IJoeObject
     private readonly AST.BlockStatement body;
     private readonly JoeEnvironment environment;
 
-    public JoeFunction(AST.Identifier[] parameters, AST.BlockStatement body, JoeEnvironment environment)
+    public JoeFunction(AST.Identifier[] parameters, AST.BlockStatement body, 
+        JoeEnvironment environment)
     {
         this.parameters = parameters;
         this.body = body;
@@ -180,7 +184,15 @@ public class JoeFunction : IJoeObject
 
     public string Inspect()
     {
-        return $"fn({string.Join(',', parameters.Select(p => p.ToString()))}) {{\n{body}\n}}";
+        StringBuilder sb = new();
+
+        sb.Append("fn(");
+        sb.Append(string.Join(',', parameters.Select(p => p.ToString())));
+        sb.Append(") {\n");
+        sb.Append(body);
+        sb.Append("\n}");
+
+        return sb.ToString();
     }
 }
 

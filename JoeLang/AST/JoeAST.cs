@@ -124,7 +124,17 @@ public class CallExpression : IExpressionNode
 
     public string TokenLiteral() { return token.Literal; }
 
-    public override string ToString() { return $"{function.ToString()}({string.Join(", ", arguments.Select(a => a.ToString()))})"; }
+    public override string ToString() 
+    {
+        StringBuilder sb = new();
+
+        sb.Append(function.ToString());
+        sb.Append('(');
+        sb.Append(string.Join(", ", arguments.Select(a => a.ToString())));
+        sb.Append(')');
+
+        return sb.ToString();
+    }
 }
 
 public class ArrayLiteral : IExpressionNode
@@ -142,7 +152,10 @@ public class ArrayLiteral : IExpressionNode
     public IExpressionNode[]? Elements { get => elements; }
 
     public string TokenLiteral() { return token.Literal; }
-    public override string ToString() { return $"[{string.Join(", ", elements.Select(s => s.ToString()))}]"; }
+    public override string ToString() 
+    { 
+        return $"[{string.Join(", ", elements.Select(s => s.ToString()))}]"; 
+    }
 }
 
 public class IndexExpression : IExpressionNode
@@ -163,7 +176,10 @@ public class IndexExpression : IExpressionNode
     public IExpressionNode Index { get => index; }
 
     public string TokenLiteral() { return token.Literal; }
-    public override string ToString() { return $"({left.ToString()}[{index.ToString()}])"; }
+    public override string ToString() 
+    { 
+        return $"({left.ToString()}[{index.ToString()}])"; 
+    }
 }
 
 public class BlockStatement : IStatementNode
@@ -184,7 +200,10 @@ public class BlockStatement : IStatementNode
 
     public string TokenLiteral() { return token.Literal; }
 
-    public override string ToString() { return string.Join("", statements.Select(s => s.ToString())); }
+    public override string ToString() 
+    { 
+        return string.Join("", statements.Select(s => s.ToString())); 
+    }
 }
 
 public class FunctionLiteral : IExpressionNode
@@ -214,7 +233,15 @@ public class FunctionLiteral : IExpressionNode
 
     public override string ToString() 
     {
-        return $"{TokenLiteral()}({string.Join(", ", parameters.Select(p => p.ToString()))}){body}";
+        StringBuilder sb = new();
+
+        sb.Append(TokenLiteral());
+        sb.Append('(');
+        sb.Append(string.Join(", ", parameters.Select(p => p.ToString())));
+        sb.Append(')');
+        sb.Append(body.ToString());
+
+        return sb.ToString();
     }
 }
 
@@ -225,7 +252,8 @@ public class IfExpression : IExpressionNode
     private readonly BlockStatement consequence;
     private readonly BlockStatement? alternative;
 
-    public IfExpression(JoeToken token, IExpressionNode condition, BlockStatement consequence, BlockStatement? alternative)
+    public IfExpression(JoeToken token, IExpressionNode condition, 
+        BlockStatement consequence, BlockStatement? alternative)
     {
         this.token = token;
         this.condition = condition;
@@ -250,7 +278,23 @@ public class IfExpression : IExpressionNode
 
     public string TokenLiteral() { return token.Literal; }
 
-    public override string ToString() { return alternative == null ? $"if{condition} {consequence}" : $"if{condition} {consequence}else{alternative}"; }
+    public override string ToString() 
+    { 
+        StringBuilder sb = new();
+
+        sb.Append("if");
+        sb.Append(condition.ToString());
+        sb.Append(' ');
+        sb.Append(consequence.ToString());
+
+        if (alternative != null)
+        {
+            sb.Append("else");
+            sb.Append(alternative.ToString());
+        }
+    
+        return sb.ToString();
+    }
 }
 
 public class Boolean : IExpressionNode
@@ -299,7 +343,10 @@ public class VarStatement : IStatementNode
 
     public string TokenLiteral() { return token.Literal; }
 
-    public override string ToString() { return $"{TokenLiteral()} {name} = {value};"; }
+    public override string ToString() 
+    { 
+        return $"{TokenLiteral()} {name} = {value};"; 
+    }
 }
 
 public class ReturnStatement : IStatementNode
@@ -320,7 +367,10 @@ public class ReturnStatement : IStatementNode
 
     public string TokenLiteral() { return token.Literal; }
 
-    public override string ToString() { return $"{TokenLiteral()} {returnValue};"; }
+    public override string ToString() 
+    { 
+        return $"{TokenLiteral()} {returnValue};"; 
+    }
 }
 
 public class ExpressionStatement : IStatementNode
@@ -341,7 +391,10 @@ public class ExpressionStatement : IStatementNode
 
     public string TokenLiteral() { return token.Literal; }
 
-    public override string ToString() { return expression != null ? expression.ToString() : ""; }
+    public override string ToString() 
+    { 
+        return expression != null ? expression.ToString() : ""; 
+    }
 }
 
 public class IntegerLiteral : IExpressionNode
