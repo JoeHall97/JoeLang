@@ -39,8 +39,13 @@ public class JoeLexer
                 token = new JoeToken(TokenConstants.MINUS, ch.ToString());
                 break;
             case '/':
-                token = new JoeToken(TokenConstants.SLASH, ch.ToString());
-                break;
+                if (PeekChar() != '/')
+                {
+                    token = new JoeToken(TokenConstants.SLASH, ch.ToString());
+                    break;
+                }
+                SkipLine();
+                return NextToken();
             case '*':
                 token = new JoeToken(TokenConstants.ASTERISK, ch.ToString());
                 break;
@@ -168,6 +173,12 @@ public class JoeLexer
     private void SkipWhitespace()
     {
         while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r')
+            ReadChar();
+    }
+
+    private void SkipLine()
+    {
+        while (ch != '\n' && ch != '\r' && ch != '\0')
             ReadChar();
     }
 

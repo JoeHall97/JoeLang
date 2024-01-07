@@ -23,6 +23,7 @@ public class LexerUnitTests
         var input = @"var five = 5;
         var ten = 10;
 
+        // test to make sure that comments are skipped
         var add = fn(x, y) {
             x + y;
         };

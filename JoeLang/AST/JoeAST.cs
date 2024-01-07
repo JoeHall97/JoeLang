@@ -70,7 +70,12 @@ public class HashLiteral : IExpressionNode
     public Dictionary<IExpressionNode, IExpressionNode> Pairs { get => pairs; }
 
     public string TokenLiteral() { return token.Literal; }
-    public override string ToString() { return $"{{{string.Join(", ", pairs.Select(p => p.Key.ToString() + ":" + p.Value.ToString()))}}}"; }
+    public override string ToString() 
+    { 
+        string res = string.Join(", ", 
+            pairs.Select(p => p.Key.ToString() + ":" + p.Value.ToString()));
+        return res; 
+    }
 }
 
 public class Identifier : IExpressionNode
