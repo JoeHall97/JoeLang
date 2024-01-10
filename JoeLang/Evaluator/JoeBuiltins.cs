@@ -13,8 +13,9 @@ public static class Builtins
         { "rest", new JoeBuiltin(RestBuiltin) },
         { "push", new JoeBuiltin(PushBuiltin) },
         { "puts", new JoeBuiltin(PutsBuiltin) },
+        { "readline", new JoeBuiltin(ReadLineBuiltin) },
+        { "readfile", new JoeBuiltin(ReadFile) },
     };
-
     private static IJoeObject LenBuiltin(params IJoeObject[] args)
     {
         if (args.Length != 1)
@@ -95,5 +96,34 @@ public static class Builtins
         foreach (var a in args)
             Console.WriteLine(a.Inspect());
         return EvaluatorConstants.NULL;
+    }
+
+    private static IJoeObject ReadLineBuiltin(params IJoeObject[] args)
+    {
+        if (args.Length != 0)
+            return new JoeError($"wrong number of arguments. got={args.Length}, want=0");
+
+        return new JoeString(Console.ReadLine() ?? "");
+    }
+
+    private static IJoeObject ReadFile(params IJoeObject[] args)
+    {
+        if (args.Length != 1)
+            return new JoeError($"wrong number of arguments. gpt={args.Length}, want=1");
+        
+        if (args[0] is not JoeString)
+            return new JoeError($"argument to 'readfile' must be an STRING. got={args[0].Type()}");
+
+        JoeString filename = (JoeString)args[0];
+        try
+        {
+            StreamReader reader = new(filename.Value);
+            string contents = reader.ReadToEnd();
+            reader.Close();
+            return new JoeString(contents);
+        } catch (Exception e)
+        {
+            return new JoeError(e.ToString());
+        }
     }
 }
