@@ -7,13 +7,13 @@ namespace JoeLang.Tests;
 
 public class DescentParserUnitTests
 {
-    private struct VarTest
+    private struct LetTest
     {
         public string input;
         public string expectedIdentifier;
         public dynamic expectedValue;
 
-        public VarTest(string input, string expectedIdentifier, dynamic expectedValue)
+        public LetTest(string input, string expectedIdentifier, dynamic expectedValue)
         {
             this.input = input;
             this.expectedIdentifier = expectedIdentifier;
@@ -169,13 +169,13 @@ public class DescentParserUnitTests
     }
 
     [Fact]
-    public void TestVarStatements()
+    public void TestLetStatements()
     {
-        var tests = new VarTest[]
+        var tests = new LetTest[]
         {
-            new VarTest("var x = 5;", "x", 5),
-            new VarTest("var y = true;", "y", true),
-            new VarTest("var foobar = y;", "foobar", "y"),
+            new LetTest("let x = 5;", "x", 5),
+            new LetTest("let y = true;", "y", true),
+            new LetTest("let foobar = y;", "foobar", "y"),
         };
 
         foreach (var test in tests)
@@ -192,9 +192,9 @@ public class DescentParserUnitTests
 
             var statement = program.Statements[0];
 
-            TestVarStatement(statement, test.expectedIdentifier);
+            TestLetStatement(statement, test.expectedIdentifier);
 
-            var value = ((VarStatement)statement).Value;
+            var value = ((LetStatement)statement).Value;
             TestLiteralExpression(value, test.expectedValue);
         }
     }
@@ -710,15 +710,15 @@ public class DescentParserUnitTests
         Assert.Equal(expectedValue.ToString().ToLower(), boolean.TokenLiteral());
     }
 
-    private static void TestVarStatement(IStatementNode statement, string expectedIdentifier)
+    private static void TestLetStatement(IStatementNode statement, string expectedIdentifier)
     {
-        Assert.Equal("var", statement.TokenLiteral());
-        Assert.IsType<AST.VarStatement>(statement);
+        Assert.Equal("let", statement.TokenLiteral());
+        Assert.IsType<AST.LetStatement>(statement);
 
-        VarStatement varStatement = (VarStatement)statement;
+        LetStatement letStatement = (LetStatement)statement;
 
-        Assert.Equal(expectedIdentifier, varStatement.Name.Value);
-        Assert.Equal(expectedIdentifier, varStatement.Name.TokenLiteral());
+        Assert.Equal(expectedIdentifier, letStatement.Name.Value);
+        Assert.Equal(expectedIdentifier, letStatement.Name.TokenLiteral());
     }
 
     private static string? CheckParserErrors(DescentParser p)

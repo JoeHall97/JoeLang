@@ -18,14 +18,14 @@ public class ASTUnitTests
             "anotherVar"
         );
 
-        var letStatement = new VarStatement(
-            new JoeToken(TokenConstants.VAR, "var"), 
+        var letStatement = new LetStatement(
+            new JoeToken(TokenConstants.LET, "let"), 
             nameIdentifier, 
             valueIdentifier
         );
 
         var program = new JoeProgram(new IStatementNode[] { letStatement });
 
-        Assert.Equal("var myVar = anotherVar;", program.ToString());
+        Assert.Equal("let myVar = anotherVar;", program.ToString());
     }
 }

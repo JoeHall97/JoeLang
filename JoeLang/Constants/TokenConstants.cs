@@ -35,7 +35,7 @@ public static class TokenConstants
 
     // Keywords
     public const string FUNCTION = "FUNCTION";
-    public const string VAR = "VAR";
+    public const string LET = "LET";
     public const string TRUE = "TRUE";
     public const string FALSE = "FALSE";
     public const string IF = "IF";

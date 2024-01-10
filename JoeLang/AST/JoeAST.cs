@@ -318,13 +318,13 @@ public class Boolean : IExpressionNode
     public override string ToString() { return token.Literal; }
 }
 
-public class VarStatement : IStatementNode
+public class LetStatement : IStatementNode
 {
     private readonly JoeToken token;
     private readonly Identifier name;
     private readonly IExpressionNode value;
 
-    public VarStatement(JoeToken token, Identifier name, IExpressionNode value)
+    public LetStatement(JoeToken token, Identifier name, IExpressionNode value)
     {
         this.token = token;
         this.name = name;

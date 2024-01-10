@@ -267,7 +267,7 @@ public class DescentParser
         return expression;
     }
 
-    private VarStatement? ParseVarStatement()
+    private LetStatement? ParseLetStatement()
     {
         JoeToken token = currToken;
         Identifier name;
@@ -288,7 +288,7 @@ public class DescentParser
         if (PeekTokenIs(TokenConstants.SEMICOLON))
             NextToken();
 
-        return new VarStatement(token, name, value);
+        return new LetStatement(token, name, value);
     }
 
     private ReturnStatement? ParseReturnStatement()
@@ -321,8 +321,8 @@ public class DescentParser
     {
         switch (currToken.Type) 
         {
-            case TokenConstants.VAR:
-                return ParseVarStatement();
+            case TokenConstants.LET:
+                return ParseLetStatement();
             case TokenConstants.RETURN:
                 return ParseReturnStatement();
             default:

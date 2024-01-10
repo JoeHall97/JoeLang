@@ -19,7 +19,7 @@ public static class Tokens
     private static Dictionary<string, string> _keywordsMap = new()
     {
         {"fn" , TokenConstants.FUNCTION},
-        {"var" , TokenConstants.VAR},
+        {"let" , TokenConstants.LET},
         {"true" , TokenConstants.TRUE},
         {"false" , TokenConstants.FALSE},
         {"if" , TokenConstants.IF},

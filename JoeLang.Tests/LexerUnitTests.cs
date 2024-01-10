@@ -20,15 +20,15 @@ public class LexerUnitTests
 	[Fact]
     public void TestNextToken()
     {
-        var input = @"var five = 5;
-        var ten = 10;
+        var input = @"let five = 5;
+        let ten = 10;
 
         // test to make sure that comments are skipped
-        var add = fn(x, y) {
+        let add = fn(x, y) {
             x + y;
         };
 
-        var result = add(five, ten);
+        let result = add(five, ten);
         !-/*5;
 		5 < 10 > 5;
 		if (5 < 10) {
@@ -46,22 +46,22 @@ public class LexerUnitTests
 
         var tests = new TokenTest[]
         {
-            // var five = 5;
-		    new TokenTest(TokenConstants.VAR, "var"),
+            // let five = 5;
+		    new TokenTest(TokenConstants.LET, "let"),
             new TokenTest(TokenConstants.IDENT, "five"),
             new TokenTest(TokenConstants.ASSIGN, "="),
             new TokenTest(TokenConstants.INT, "5"),
             new TokenTest(TokenConstants.SEMICOLON, ";"),
-            // var ten = 10;
-            new TokenTest(TokenConstants.VAR, "var"),
+            // let ten = 10;
+            new TokenTest(TokenConstants.LET, "let"),
             new TokenTest(TokenConstants.IDENT, "ten"),
             new TokenTest(TokenConstants.ASSIGN, "=")   ,
             new TokenTest(TokenConstants.INT, "10"),
             new TokenTest(TokenConstants.SEMICOLON, ";"),
-            // var add = fn(x, y) {
+            // let add = fn(x, y) {
             // 		x + y;
             // };
-            new TokenTest(TokenConstants.VAR, "var"),
+            new TokenTest(TokenConstants.LET, "let"),
             new TokenTest(TokenConstants.IDENT, "add"),
             new TokenTest(TokenConstants.ASSIGN, "="),
             new TokenTest(TokenConstants.FUNCTION, "fn"),
@@ -77,8 +77,8 @@ public class LexerUnitTests
             new TokenTest(TokenConstants.SEMICOLON, ";"),
             new TokenTest(TokenConstants.RBRACE, "}"),
             new TokenTest(TokenConstants.SEMICOLON, ";"),
-            // var result = add(five, ten);
-		    new TokenTest(TokenConstants.VAR, "var"),
+            // let result = add(five, ten);
+		    new TokenTest(TokenConstants.LET, "let"),
             new TokenTest(TokenConstants.IDENT, "result"),
             new TokenTest(TokenConstants.ASSIGN, "="),
             new TokenTest(TokenConstants.IDENT, "add"),

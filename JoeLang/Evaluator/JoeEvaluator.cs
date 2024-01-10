@@ -22,11 +22,11 @@ public class JoeEvaluator
                 if (IsError(returnValue))
                     return returnValue;
                 return new JoeReturnValue(returnValue);
-            case AST.VarStatement varStatement:
-                var varValue = Evaluate(varStatement.Value, environment);
-                if (IsError(varValue))
-                    return varValue;
-                environment.Set(((AST.VarStatement)node).Name.Value, varValue);
+            case AST.LetStatement letStatement:
+                var letValue = Evaluate(letStatement.Value, environment);
+                if (IsError(letValue))
+                    return letValue;
+                environment.Set(((AST.LetStatement)node).Name.Value, letValue);
                 break;
 
             // expressions

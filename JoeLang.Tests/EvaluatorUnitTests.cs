@@ -57,7 +57,7 @@ public class EvaluatorUnitTests
     public void TestHashLiterals()
     {
         var input = """
-         var two = "two";
+         let two = "two";
          {
              "one": 10 - 9,
              two: 1 + 1,
@@ -100,7 +100,7 @@ public class EvaluatorUnitTests
         {
             new("{\"foo\": 5}[\"foo\"]", (long)5),
             new("{\"foo\": 5}[\"bar\"]", null),
-            new("var key = \"foo\"; {\"foo\": 5}[key]", (long)5),
+            new("let key = \"foo\"; {\"foo\": 5}[key]", (long)5),
             new("{}[\"foo\"]", null),
             new("{5: 5}[5]", (long)5),
             new("{true: 5}[true]", (long)5),
@@ -139,11 +139,11 @@ public class EvaluatorUnitTests
             new("[1, 2, 3][0]", 1),
             new("[1, 2, 3][1]", 2),
             new("[1, 2, 3][2]", 3),
-            new("var i = 0; [1][i];", 1),
+            new("let i = 0; [1][i];", 1),
             new("[1, 2, 3][1 + 1];", 3),
-            new("var array = [1, 2, 3]; array[2];", 3),
-            new("var array = [1, 2, 3]; array[0] + array[1] + array[2];", 6),
-            new("var array = [1, 2, 3]; var i = array[0]; array[i]", 2),
+            new("let array = [1, 2, 3]; array[2];", 3),
+            new("let array = [1, 2, 3]; array[0] + array[1] + array[2];", 6),
+            new("let array = [1, 2, 3]; let i = array[0]; array[i]", 2),
             new("[1, 2, 3][3]", null),
             new("[1, 2, 3][-1]", null)
         };
@@ -163,11 +163,11 @@ public class EvaluatorUnitTests
     {
         var input = 
             """
-            var newAdder = fn(x) {
+            let newAdder = fn(x) {
                 fn(y) { x + y };
             };
             
-            var addTwo = newAdder(2);
+            let addTwo = newAdder(2);
             addTwo(2);
             """;
 
@@ -194,11 +194,11 @@ public class EvaluatorUnitTests
     {
         var tests = new IntegerTest[]
         {
-            new("var identity = fn(x) { return x; }; identity(5);", 5),
-            new("var identity = fn(x) { x; }; identity(5);", 5),
-            new("var double = fn(x) { x * 2; }; double(5);", 10),
-            new("var add = fn(x, y) { x + y; }; add(5, 5);", 10),
-            new("var add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));", 20),
+            new("let identity = fn(x) { return x; }; identity(5);", 5),
+            new("let identity = fn(x) { x; }; identity(5);", 5),
+            new("let double = fn(x) { x * 2; }; double(5);", 10),
+            new("let add = fn(x, y) { x + y; }; add(5, 5);", 10),
+            new("let add = fn(x, y) { x + y; }; add(5 + 5, add(5, 5));", 20),
             new("fn(x) { x; }(5)", 5)
         };
 
@@ -438,14 +438,14 @@ public class EvaluatorUnitTests
     }
 
     [Fact]
-    public void TestVarStatements()
+    public void TestLetStatements()
     {
         var tests = new IntegerTest[]
         {
-            new("var a = 5; a;", 5),
-            new("var a = 5 * 5; a;", 25),
-            new("var a = 5; var b = a; b;", 5),
-            new("var a = 5; var b = a; var c = a + b + 5; c;", 15),
+            new("let a = 5; a;", 5),
+            new("let a = 5 * 5; a;", 25),
+            new("let a = 5; let b = a; b;", 5),
+            new("let a = 5; let b = a; let c = a + b + 5; c;", 15),
         };
 
         foreach (var test in tests) 
