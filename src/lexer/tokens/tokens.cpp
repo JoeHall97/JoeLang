@@ -1,4 +1,4 @@
-#include "token.hpp"
+#include "tokens.hpp"
 
 const std::map<std::string, TokenType> keywords = {
     {"fn", FUNCTION},

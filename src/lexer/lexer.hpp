@@ -1,7 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H
 #include <string>
-#include "../tokens/token.hpp"
+#include "tokens/tokens.hpp"
 
 class Lexer {
     public:
