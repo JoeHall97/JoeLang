@@ -1,5 +1,5 @@
-#ifndef TOKEN_H
-#define TOKEN_H
+#pragma once
+
 typedef enum {
     ILLEGAL,
     TOKEOF,
@@ -39,12 +39,12 @@ typedef enum {
 	MACRO
 } TokenType;
 
-struct token {
+struct Token {
     TokenType type;
     char* literal;
-	int literalLength;
+	unsigned literal_length;
 };
-typedef struct token Token;
+typedef struct Token Token;
 
 // struct tokenTypeKeyValue {
 // 	TokenType key;
@@ -83,6 +83,3 @@ typedef struct token Token;
 // 	RETURN, "RETURN",
 // 	MACRO, "MACRO"
 // };
-
-Token new_token(TokenType type, char* literal);
-#endif

@@ -1,27 +1,19 @@
 ﻿# CMakeList.txt : CMake project for JoeLang, include source and define
 # project specific logic here.
 
-#add_subdirectory(Lexer)
-#add_subdirectory(AST)
-#add_subdirectory(Tokens)
+SET(TARGET_NAME JoeLang)
 
-SET(SUB_FILES_SRC
-  Lexer/lexer.c
-  Tokens/token.c
-)
-
-SET(SUB_FILES_HDRS
-  Lexer/lexer.h
-  Tokens/token.c
-)
+add_subdirectory("Lexer")
 
 # Add source to this project's executable.
-add_executable (JoeLang "JoeLang.c" "JoeLang.h" ${SUB_FILES_SRC} ${SUB_FILES_HDRS})
+add_executable (${TARGET_NAME} "JoeLang.c" "JoeLang.h")
+
+target_link_libraries(${TARGET_NAME} PUBLIC Lexer)
 
 if (CMAKE_VERSION VERSION_GREATER 3.21)
-  set_property(TARGET JoeLang PROPERTY C_STANDARD 17)
+  set_property(TARGET ${TARGE_NAME} PROPERTY C_STANDARD 17)
 else()
- set_property(TARGET JoeLang PROPERTY C_STANDARD 11)
+ set_property(TARGET ${TARGE_NAME} PROPERTY C_STANDARD 11)
 endif()
 
 # TODO: Add tests and install targets if needed.

@@ -1,16 +1,15 @@
-#ifndef LEXER_H
-#define LEXER_H
-#include "../Tokens/token.h"
+#pragma once
+
+#include "Tokens/tokens.h"
 
 struct Lexer {
-    int position;
-    int readPosition;
+    unsigned position;
+    unsigned read_position;
     char *ch;
-    int inputLength;
+    unsigned input_length;
     char* input;
 };
 typedef struct Lexer Lexer;
 
-Lexer create_lexer(char* input, int inputLength);
-Token lexer_next_token(Lexer* l);
-#endif
+Lexer CreateLexer(char* input, int input_length);
+Token LexerNextToken(Lexer* l);
