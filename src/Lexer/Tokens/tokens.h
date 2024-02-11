@@ -83,3 +83,5 @@ typedef struct Token Token;
 // 	RETURN, "RETURN",
 // 	MACRO, "MACRO"
 // };
+
+TokenType lookupident(char* s, int len);

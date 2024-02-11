@@ -7,9 +7,9 @@ struct Lexer {
     unsigned read_position;
     char *ch;
     unsigned input_length;
-    char* input;
+    char *input;
 };
 typedef struct Lexer Lexer;
 
-Lexer CreateLexer(char* input, int input_length);
-Token LexerNextToken(Lexer* l);
+Lexer createlexer(char *input, int input_length);
+Token nexttoken(Lexer *l);
