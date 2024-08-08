@@ -8,4 +8,4 @@ SET (LEXER_HDRS
     tokens/tokens.hpp
 )
 
-ADD_LIBRARY(Lexer ${LEXER_SRC} ${LEXER_SRC})
+ADD_LIBRARY(Lexer STATIC ${LEXER_SRC} ${LEXER_SRC})

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.26)
 
 if (POLICY CMP0141)
     cmake_policy(SET CMP0141 NEW)
@@ -7,4 +7,7 @@ endif()
 
 project("JoeLang")
 
-add_subdirectory("src")
+include_directories(src)
+add_subdirectory(src)
+
+add_subdirectory(tests)

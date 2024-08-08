@@ -1,16 +1,15 @@
-#ifndef LEXER_H
-#define LEXER_H
+#pragma once
 #include <string>
 #include "tokens/tokens.hpp"
 
 class Lexer {
     public:
-        Lexer (std::string);
+        explicit Lexer (std::string);
         Token next_token();
     private:
-        int position;
+        int position{};
         int readPosition;
-        char ch;
+        char ch{};
         std::string input;
         void skip_whitespace();
         void read_char();
@@ -19,5 +18,3 @@ class Lexer {
         std::string read_identifier();
         std::string read_number();
 };
-
-#endif

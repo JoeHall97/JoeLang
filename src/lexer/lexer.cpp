@@ -111,7 +111,8 @@ Token Lexer::next_token() {
                 token.literal = read_identifier();
                 token.type = look_up_ident(token.literal);
                 return token;
-            } else if (isdigit(ch)) {
+            }
+            if (isdigit(ch)) {
                 token.type = INT;
                 token.literal = read_number();
                 return token;

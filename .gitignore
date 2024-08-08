@@ -3,6 +3,9 @@ bin/
 .DS_Store
 
 out/*
+cmake-build-debug
+build
 
 .vs
 .vscode
+.idea/
