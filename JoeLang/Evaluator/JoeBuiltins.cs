@@ -35,7 +35,7 @@ public static class Builtins
             return new JoeError($"wrong number of arguments. got={args.Length}, want=1");
 
         if (args[0] is JoeArray array)
-            return array.Elements.Length > 0 ? array.Elements[0] : EvaluatorConstants.NULL;
+            return array.Elements.Length > 0 ? array.Elements[0] : EvaluatorConstants.Null;
 
         return new JoeError($"argument to 'first' must be an ARRAY. got={args[0].Type()}");
     }
@@ -50,7 +50,7 @@ public static class Builtins
 
         var array = (JoeArray)args[0];
         var length = array.Elements.Length;
-        return length > 0 ? array.Elements[length - 1] : EvaluatorConstants.NULL;
+        return length > 0 ? array.Elements[length - 1] : EvaluatorConstants.Null;
     }
 
     private static IJoeObject RestBuiltin(params IJoeObject[] args)
@@ -69,7 +69,7 @@ public static class Builtins
             array.Elements.Skip(1).ToArray().CopyTo(newElements, 0);
             return new JoeArray(newElements);
         }
-        return EvaluatorConstants.NULL;
+        return EvaluatorConstants.Null;
     }
 
     private static IJoeObject PushBuiltin(params IJoeObject[] args)
@@ -95,7 +95,7 @@ public static class Builtins
     { 
         foreach (var a in args)
             Console.WriteLine(a.Inspect());
-        return EvaluatorConstants.NULL;
+        return EvaluatorConstants.Null;
     }
 
     private static IJoeObject ReadLineBuiltin(params IJoeObject[] args)

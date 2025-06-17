@@ -2,43 +2,43 @@
 
 public static class TokenConstants
 {
-    public const string ILLEGAL = "ILLEGAL";
-    public const string EOF = "EOF";
+    public const string Illegal = "ILLEGAL";
+    public const string Eof = "EOF";
 
     // Identifiers + literals
-    public const string IDENT = "IDENT";
-    public const string INT = "INT";
-    public const string STRING = "STRING";
+    public const string Ident = "IDENT";
+    public const string Int = "INT";
+    public const string String = "STRING";
 
     // Operators
-    public const string ASSIGN = "=";
-    public const string PLUS = "+";
-    public const string MINUS = "-";
-    public const string BANG = "!";
-    public const string ASTERISK = "*";
-    public const string SLASH = "/";
-    public const string LT = "<";
-    public const string GT = ">";
-    public const string EQ = "==";
-    public const string NOT_EQ = "!=";
+    public const string Assign = "=";
+    public const string Plus = "+";
+    public const string Minus = "-";
+    public const string Bang = "!";
+    public const string Asterisk = "*";
+    public const string Slash = "/";
+    public const string Lt = "<";
+    public const string Gt = ">";
+    public const string Eq = "==";
+    public const string NotEq = "!=";
 
     // Delimiters
-    public const string COMMA = ",";
-    public const string SEMICOLON = ";";
-    public const string LPAREN = "(";
-    public const string RPAREN = ")";
-    public const string LBRACE = "{";
-    public const string RBRACE = "}";
-    public const string LBRACKET = "[";
-    public const string RBRACKET = "]";
-    public const string COLON = ":";
+    public const string Comma = ",";
+    public const string Semicolon = ";";
+    public const string Lparen = "(";
+    public const string Rparen = ")";
+    public const string Lbrace = "{";
+    public const string Rbrace = "}";
+    public const string Lbracket = "[";
+    public const string Rbracket = "]";
+    public const string Colon = ":";
 
     // Keywords
-    public const string FUNCTION = "FUNCTION";
-    public const string LET = "LET";
-    public const string TRUE = "TRUE";
-    public const string FALSE = "FALSE";
-    public const string IF = "IF";
-    public const string ELSE = "ELSE";
-    public const string RETURN = "RETURN";
+    public const string Function = "FUNCTION";
+    public const string Let = "LET";
+    public const string True = "TRUE";
+    public const string False = "FALSE";
+    public const string If = "IF";
+    public const string Else = "ELSE";
+    public const string Return = "RETURN";
 }

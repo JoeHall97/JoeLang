@@ -27,16 +27,14 @@ public class JoeProgram : INode
 {
     private readonly IStatementNode[] statements;
 
-    public JoeProgram(IStatementNode[] statmenets)
+    public JoeProgram(IStatementNode[] statements)
     {
-        this.statements = statmenets;
+        this.statements = statements;
     }
 
-    public string TokenLiteral() 
-    { 
-        if (statements.Length > 0)
-            return statements[0].TokenLiteral();
-        return ""; 
+    public string TokenLiteral()
+    {
+        return statements.Length > 0 ? statements[0].TokenLiteral() : "";
     }
 
     public override string ToString() 
@@ -58,22 +56,21 @@ public class JoeProgram : INode
 public class HashLiteral : IExpressionNode
 {
     private readonly JoeToken token;
-    private Dictionary<IExpressionNode, IExpressionNode> pairs;
 
     public HashLiteral(JoeToken token, Dictionary<IExpressionNode, IExpressionNode> pairs)
     {
         this.token = token;
-        this.pairs = pairs;
+        this.Pairs = pairs;
     }
 
-    public JoeToken Token { get => token; }
-    public Dictionary<IExpressionNode, IExpressionNode> Pairs { get => pairs; }
+    public JoeToken Token => token;
+    public Dictionary<IExpressionNode, IExpressionNode> Pairs { get; }
 
     public string TokenLiteral() { return token.Literal; }
     public override string ToString() 
     { 
-        string res = string.Join(", ", 
-            pairs.Select(p => p.Key.ToString() + ":" + p.Value.ToString()));
+        var res = string.Join(", ", 
+            Pairs.Select(p => p.Key.ToString() + ":" + p.Value.ToString()));
         return res; 
     }
 }

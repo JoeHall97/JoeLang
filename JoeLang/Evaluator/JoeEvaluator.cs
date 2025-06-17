@@ -15,7 +15,7 @@ public class JoeEvaluator
                 return EvaluateProgram(program, environment);
             case AST.ExpressionStatement expressionStatement:
                 return Evaluate(expressionStatement.Expression, environment);
-            case AST.BlockStatement blockStatement: 
+            case AST.BlockStatement blockStatement:
                 return EvaluateBlockStatement(blockStatement, environment);
             case AST.ReturnStatement returnStatement:
                 var returnValue = Evaluate(returnStatement.ReturnValue, environment);
@@ -43,17 +43,17 @@ public class JoeEvaluator
                 return new JoeArray(arrayElements);
             case AST.IndexExpression indexExpression:
                 var left = Evaluate(indexExpression.Left, environment);
-                if (IsError(left)) 
+                if (IsError(left))
                     return left;
                 var index = Evaluate(indexExpression.Index, environment);
                 if (IsError(index))
                     return index;
                 return EvaluateIndexExpression(left, index);
-            case AST.FunctionLiteral functionLiteral: 
+            case AST.FunctionLiteral functionLiteral:
                 var parameters = functionLiteral.Parameters;
                 var body = functionLiteral.Body;
                 return new JoeFunction(parameters, body, environment);
-            case AST.CallExpression callExpression: 
+            case AST.CallExpression callExpression:
                 var function = Evaluate(callExpression.Function, environment);
                 if (IsError(function))
                     return function;
@@ -62,17 +62,17 @@ public class JoeEvaluator
                     return arguments[0];
 
                 return ApplyFunction(function, arguments);
-            case AST.PrefixExpression prefixExpression: 
+            case AST.PrefixExpression prefixExpression:
                 var prefixRight = Evaluate(prefixExpression.Right, environment);
-                if (IsError(prefixRight)) 
+                if (IsError(prefixRight))
                     return prefixRight;
                 return EvaluatePrefixExpression(prefixExpression.Operator, prefixRight);
             case AST.InfixExpression infixExpression:
                 var infixLeft = Evaluate(infixExpression.Left, environment);
-                if (IsError(infixLeft)) 
+                if (IsError(infixLeft))
                     return infixLeft;
                 var infixRight = Evaluate(infixExpression.Right, environment);
-                if (IsError((infixRight))) 
+                if (IsError((infixRight)))
                     return infixRight;
                 return EvaluateInfixExpression(infixExpression.Operator, infixLeft, infixRight);
             case AST.IfExpression ifExpression:
@@ -90,8 +90,8 @@ public class JoeEvaluator
     {
         var pairs = new Dictionary<HashKey, HashPair>();
 
-        foreach (var keyValuePair in hashLiteral.Pairs) 
-        { 
+        foreach (var keyValuePair in hashLiteral.Pairs)
+        {
             var key = Evaluate(keyValuePair.Key, environment);
             if (IsError(key))
                 return key;
@@ -111,10 +111,10 @@ public class JoeEvaluator
                 hashKey = joeBoolean.HashKey();
             else if (key is JoeInteger joeInteger)
                 hashKey = joeInteger.HashKey();
-            
+
             if (hashKey == null)
                 return new JoeError($"unusable as hash key: {key.Type()}");
-            
+
             pairs[hashKey.GetValueOrDefault()] = new HashPair(key, value);
         }
 
@@ -138,7 +138,7 @@ public class JoeEvaluator
 
         if (hashObject.Pairs.TryGetValue(hashKey.GetValueOrDefault(), out HashPair hashPair))
             return hashPair.value;
-        return EvaluatorConstants.NULL;
+        return EvaluatorConstants.Null;
     }
 
     private IJoeObject EvaluateIndexExpression(IJoeObject left, IJoeObject index)
@@ -155,15 +155,15 @@ public class JoeEvaluator
         var i = integer.Value;
         var max = array.Elements.Length;
 
-        return i >= 0 && i < max ? array.Elements[i] : EvaluatorConstants.NULL;
+        return i >= 0 && i < max ? array.Elements[i] : EvaluatorConstants.Null;
     }
 
     private IJoeObject? EvaluateProgram(AST.JoeProgram program, JoeEnvironment environment)
     {
         IJoeObject? result = null;
 
-        foreach(var statement in program.Statements) 
-        { 
+        foreach (var statement in program.Statements)
+        {
             result = Evaluate(statement, environment);
 
             switch (result)
@@ -182,25 +182,25 @@ public class JoeEvaluator
     {
         IJoeObject? result = null;
 
-        foreach (var statement in block.Statements) 
-        { 
+        foreach (var statement in block.Statements)
+        {
             result = Evaluate(statement, environment);
 
-            if (result != null && (result is JoeReturnValue ||result is JoeError))
+            if (result != null && (result is JoeReturnValue || result is JoeError))
                 return result;
         }
 
         return result;
     }
 
-    private IJoeObject EvaluateInfixExpression(string op, IJoeObject left, IJoeObject right) 
-    { 
+    private IJoeObject EvaluateInfixExpression(string op, IJoeObject left, IJoeObject right)
+    {
         if (left is JoeInteger leftInt && right is JoeInteger rightInt)
             return EvaluateIntegerInfixExpression(op, leftInt, rightInt);
 
         if (left is JoeString leftString && right is JoeString rightString)
             return EvaluateStringInfixExpression(op, leftString, rightString);
-        
+
         if (left.Type() != right.Type())
             return new JoeError($"type mismatch: {left.Type()} {op} {right.Type()}");
 
@@ -208,7 +208,7 @@ public class JoeEvaluator
         {
             "==" => BoolToBooleanObject(left == right),
             "!=" => BoolToBooleanObject(left != right),
-            _    => new JoeError($"unknown operator: {left.Type()} {op} {right.Type()}"),
+            _ => new JoeError($"unknown operator: {left.Type()} {op} {right.Type()}"),
         };
     }
 
@@ -216,20 +216,20 @@ public class JoeEvaluator
     {
         return op switch
         {
-            "+"  => new JoeInteger(left.Value + right.Value),
-            "-"  => new JoeInteger(left.Value - right.Value),
-            "*"  => new JoeInteger(left.Value * right.Value),
-            "/"  => new JoeInteger(left.Value / right.Value),
-            "<"  => BoolToBooleanObject(left.Value < right.Value),
-            ">"  => BoolToBooleanObject(left.Value > right.Value),
+            "+" => new JoeInteger(left.Value + right.Value),
+            "-" => new JoeInteger(left.Value - right.Value),
+            "*" => new JoeInteger(left.Value * right.Value),
+            "/" => new JoeInteger(left.Value / right.Value),
+            "<" => BoolToBooleanObject(left.Value < right.Value),
+            ">" => BoolToBooleanObject(left.Value > right.Value),
             "==" => BoolToBooleanObject(left.Value == right.Value),
             "!=" => BoolToBooleanObject(left.Value != right.Value),
-            _    => new JoeError($"unknown operator: {left.Type()} {op} {right.Type()}"),
+            _ => new JoeError($"unknown operator: {left.Type()} {op} {right.Type()}"),
         };
     }
 
-    private IJoeObject EvaluateStringInfixExpression(string op, JoeString left, JoeString right) 
-    { 
+    private IJoeObject EvaluateStringInfixExpression(string op, JoeString left, JoeString right)
+    {
         if (op != "+")
             return new JoeError($"unknown operator: {left.Type()} {op} {right.Type()}");
 
@@ -242,7 +242,7 @@ public class JoeEvaluator
         {
             "!" => EvaluateBangOperatorExpression(right),
             "-" => EvaluateMinusPrefixOperatorExpression(right),
-            _   => new JoeError($"unknown operator: {op}{right.Type()}")
+            _ => new JoeError($"unknown operator: {op}{right.Type()}")
         };
     }
 
@@ -256,21 +256,21 @@ public class JoeEvaluator
     {
         return right switch
         {
-            JoeBoolean => right == EvaluatorConstants.TRUE ? 
-                EvaluatorConstants.FALSE : EvaluatorConstants.TRUE,
-            JoeNull    => EvaluatorConstants.TRUE,
-            _          => EvaluatorConstants.FALSE
+            JoeBoolean => right == EvaluatorConstants.True ?
+                EvaluatorConstants.False : EvaluatorConstants.True,
+            JoeNull => EvaluatorConstants.True,
+            _ => EvaluatorConstants.False
 
         };
     }
 
-    private IJoeObject[] EvaluateExpressions(AST.IExpressionNode[] expressions, 
+    private IJoeObject[] EvaluateExpressions(AST.IExpressionNode[] expressions,
         JoeEnvironment environment)
     {
         var result = new List<IJoeObject>();
 
-        foreach (var expression in expressions) 
-        { 
+        foreach (var expression in expressions)
+        {
             var evaluated = Evaluate(expression, environment);
             if (IsError(evaluated))
                 return new IJoeObject[] { evaluated };
@@ -280,18 +280,18 @@ public class JoeEvaluator
         return result.ToArray();
     }
 
-    private IJoeObject? EvaluateIfExpression(AST.IfExpression ifExpression, 
+    private IJoeObject? EvaluateIfExpression(AST.IfExpression ifExpression,
         JoeEnvironment environment)
     {
         var condition = Evaluate(ifExpression.Condition, environment);
-        if (IsError(condition)) 
+        if (IsError(condition))
             return condition;
 
         if (IsTruthy(condition))
             return Evaluate(ifExpression.Consequence, environment);
         else if (ifExpression.Alternative != null)
             return Evaluate(ifExpression.Alternative, environment);
-        return EvaluatorConstants.NULL;
+        return EvaluatorConstants.Null;
     }
 
     private IJoeObject? EvaluateIdentifier(AST.Identifier node, JoeEnvironment environment)
@@ -317,8 +317,8 @@ public class JoeEvaluator
         }
     }
 
-    private JoeEnvironment ExtendedFunctionEnvironment(JoeFunction function, IJoeObject[] args) 
-    { 
+    private JoeEnvironment ExtendedFunctionEnvironment(JoeFunction function, IJoeObject[] args)
+    {
         var environment = new JoeEnvironment(function.Environment);
 
         for (int i = 0; i < function.Parameters.Length; i++)
@@ -337,7 +337,7 @@ public class JoeEvaluator
 
     private static bool IsError(IJoeObject? obj)
     {
-        return obj != null && obj.Type() == ObjectConstants.ERROR_OBJECT;
+        return obj != null && obj.Type() == ObjectConstants.ErrorObject;
     }
 
     private static bool IsTruthy(IJoeObject? obj)
@@ -350,8 +350,8 @@ public class JoeEvaluator
         };
     }
 
-    private static JoeBoolean BoolToBooleanObject(bool input) 
-    { 
-        return input ? EvaluatorConstants.TRUE : EvaluatorConstants.FALSE;
+    private static JoeBoolean BoolToBooleanObject(bool input)
+    {
+        return input ? EvaluatorConstants.True : EvaluatorConstants.False;
     }
 }

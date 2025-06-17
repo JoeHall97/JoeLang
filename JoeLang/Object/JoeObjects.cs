@@ -17,15 +17,15 @@ public interface IHashable
 
 public delegate IJoeObject BuiltinFunction(params IJoeObject[] args);
 
-public struct HashKey
+public record struct HashKey
 {
-    public readonly string objectType;
-    public readonly long value;
+    public readonly string ObjectType;
+    public readonly long Value;
 
     public HashKey(string objectType, long value)
     {
-        this.objectType = objectType;
-        this.value = value;
+        this.ObjectType = objectType;
+        this.Value = value;
     }
 }
 
@@ -52,7 +52,7 @@ public class JoeHash : IJoeObject
 
     public Dictionary<HashKey,HashPair> Pairs { get => pairs; }
 
-    public string Type() { return ObjectConstants.HASH_OBJECT; }
+    public string Type() { return ObjectConstants.HashObject; }
     public string Inspect() 
     { 
         StringBuilder sb = new();
@@ -78,7 +78,7 @@ public class JoeBuiltin : IJoeObject
 
     public BuiltinFunction Function { get => function; }
 
-    public string Type() { return ObjectConstants.BUILTIN_OBJECT; }
+    public string Type() { return ObjectConstants.BuiltinObject; }
     public string Inspect() { return "builtin function"; }
 }
 
@@ -93,7 +93,7 @@ public class JoeArray : IJoeObject
 
     public IJoeObject[] Elements { get => elements; }
 
-    public string Type() { return ObjectConstants.ARRAY_OBJECT; }
+    public string Type() { return ObjectConstants.ArrayObject; }
     public string Inspect() 
     { 
         return $"[{string.Join(", ", elements.Select(e => e.Inspect()))}]"; 
@@ -111,7 +111,7 @@ public class JoeString : IJoeObject
 
     public string Value { get => value; }
 
-    public string Type() { return ObjectConstants.STRING_OBJECT; }
+    public string Type() { return ObjectConstants.StringObject; }
     public string Inspect() { return value; }
     public HashKey HashKey()
     {
@@ -131,7 +131,7 @@ public class JoeInteger :IJoeObject, IHashable
 
     public long Value { get => value; }
 
-    public string Type() { return ObjectConstants.INT_OBJECT; }
+    public string Type() { return ObjectConstants.IntObject; }
     public string Inspect() { return value.ToString(); }
     public HashKey HashKey() { return new HashKey(Type(), value); }
 }
@@ -144,7 +144,7 @@ public class JoeBoolean : IJoeObject, IHashable
 
     public bool Value { get => value; }
 
-    public string Type() { return ObjectConstants.BOOL_OBJECT; }
+    public string Type() { return ObjectConstants.BoolObject; }
     public string Inspect() { return value.ToString(); }
     public HashKey HashKey() { return new HashKey(Type(), value ? 1 : 0); }
 }
@@ -157,7 +157,7 @@ public class JoeReturnValue : IJoeObject
 
     public IJoeObject Value { get => value; }
 
-    public string Type() { return ObjectConstants.RETURN_OBJECT; }
+    public string Type() { return ObjectConstants.ReturnObject; }
 
     public string Inspect() { return value.Inspect(); }
 }
@@ -180,7 +180,7 @@ public class JoeFunction : IJoeObject
     public AST.BlockStatement Body { get => body; }
     public JoeEnvironment Environment { get => environment; }
 
-    public string Type() { return ObjectConstants.FUNCTION_OBJECT; }
+    public string Type() { return ObjectConstants.FunctionObject; }
 
     public string Inspect()
     {
@@ -200,7 +200,7 @@ public class JoeNull : IJoeObject
 {
     public JoeNull() { }
 
-    public string Type() { return ObjectConstants.NULL_OBJECT; }
+    public string Type() { return ObjectConstants.NullObject; }
 
     public string Inspect() { return "null"; }
 }
@@ -213,7 +213,7 @@ public class JoeError : IJoeObject
 
     public string Message { get => message; }
 
-    public string Type() { return ObjectConstants.ERROR_OBJECT; }
+    public string Type() { return ObjectConstants.ErrorObject; }
 
     public string Inspect() { return $"ERROR: {message}"; }
 }

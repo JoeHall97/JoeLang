@@ -33,16 +33,16 @@ public class DescentParser
 
     private readonly Dictionary<string, Precedence> precidenceMap = new()
     {
-        { TokenConstants.EQ, Precedence.EQUALS },
-        { TokenConstants.NOT_EQ, Precedence.EQUALS },
-        { TokenConstants.LT, Precedence.LESSGREATER },
-        { TokenConstants.GT, Precedence.LESSGREATER },
-        { TokenConstants.PLUS, Precedence.SUM },
-        { TokenConstants.MINUS, Precedence.SUM },
-        { TokenConstants.SLASH, Precedence.PRODUCT },
-        { TokenConstants.ASTERISK, Precedence.PRODUCT },
-        { TokenConstants.LPAREN, Precedence.CALL },
-        { TokenConstants.LBRACKET, Precedence.INDEX },
+        { TokenConstants.Eq, Precedence.EQUALS },
+        { TokenConstants.NotEq, Precedence.EQUALS },
+        { TokenConstants.Lt, Precedence.LESSGREATER },
+        { TokenConstants.Gt, Precedence.LESSGREATER },
+        { TokenConstants.Plus, Precedence.SUM },
+        { TokenConstants.Minus, Precedence.SUM },
+        { TokenConstants.Slash, Precedence.PRODUCT },
+        { TokenConstants.Asterisk, Precedence.PRODUCT },
+        { TokenConstants.Lparen, Precedence.CALL },
+        { TokenConstants.Lbracket, Precedence.INDEX },
     };
     
     public DescentParser(JoeLexer lexer) 
@@ -56,32 +56,32 @@ public class DescentParser
 
         prefixFunctions = new()
         {
-            { TokenConstants.IDENT, ParseIdentifier },
-            { TokenConstants.INT, ParseIntegerLiteral },
-            { TokenConstants.MINUS, ParsePrefixExpression },
-            { TokenConstants.BANG, ParsePrefixExpression },
-            { TokenConstants.TRUE, ParseBoolean },
-            { TokenConstants.FALSE, ParseBoolean },
-            { TokenConstants.LPAREN, ParseGroupExpression },
-            { TokenConstants.IF, ParseIfExpression },
-            { TokenConstants.FUNCTION, ParseFunctionLiteral },
-            { TokenConstants.STRING, ParseStringLiteral },
-            { TokenConstants.LBRACKET, ParseArrayLiteral },
-            { TokenConstants.LBRACE, ParseHashLiteral }
+            { TokenConstants.Ident, ParseIdentifier },
+            { TokenConstants.Int, ParseIntegerLiteral },
+            { TokenConstants.Minus, ParsePrefixExpression },
+            { TokenConstants.Bang, ParsePrefixExpression },
+            { TokenConstants.True, ParseBoolean },
+            { TokenConstants.False, ParseBoolean },
+            { TokenConstants.Lparen, ParseGroupExpression },
+            { TokenConstants.If, ParseIfExpression },
+            { TokenConstants.Function, ParseFunctionLiteral },
+            { TokenConstants.String, ParseStringLiteral },
+            { TokenConstants.Lbracket, ParseArrayLiteral },
+            { TokenConstants.Lbrace, ParseHashLiteral }
         };
 
         infixFunctions = new()
         {
-            { TokenConstants.PLUS, ParseInfixExpression },
-            { TokenConstants.MINUS, ParseInfixExpression },
-            { TokenConstants.SLASH, ParseInfixExpression },
-            { TokenConstants.ASTERISK, ParseInfixExpression },
-            { TokenConstants.EQ, ParseInfixExpression },
-            { TokenConstants.NOT_EQ, ParseInfixExpression },
-            { TokenConstants.LT, ParseInfixExpression },
-            { TokenConstants.GT, ParseInfixExpression },
-            { TokenConstants.LPAREN, ParseCallExpression },
-            { TokenConstants.LBRACKET, ParseIndexExpression },
+            { TokenConstants.Plus, ParseInfixExpression },
+            { TokenConstants.Minus, ParseInfixExpression },
+            { TokenConstants.Slash, ParseInfixExpression },
+            { TokenConstants.Asterisk, ParseInfixExpression },
+            { TokenConstants.Eq, ParseInfixExpression },
+            { TokenConstants.NotEq, ParseInfixExpression },
+            { TokenConstants.Lt, ParseInfixExpression },
+            { TokenConstants.Gt, ParseInfixExpression },
+            { TokenConstants.Lparen, ParseCallExpression },
+            { TokenConstants.Lbracket, ParseIndexExpression },
         };
     }
 
@@ -94,7 +94,7 @@ public class DescentParser
     {
         List<IStatementNode> statements = new();
 
-        while (!CurrentTokenIs(TokenConstants.EOF)) 
+        while (!CurrentTokenIs(TokenConstants.Eof)) 
         {
             var statement = ParseStatement();
             if (statement != null)
@@ -110,12 +110,12 @@ public class DescentParser
         var token = currToken;
         var pairs = new Dictionary<IExpressionNode, IExpressionNode>();
 
-        while (!PeekTokenIs(TokenConstants.RBRACE))
+        while (!PeekTokenIs(TokenConstants.Rbrace))
         {
             NextToken();
             var key = ParseExpression(Precedence.LOWEST);
 
-            if (!PeekExpected(TokenConstants.COLON))
+            if (!PeekExpected(TokenConstants.Colon))
                 return null;
 
             NextToken();
@@ -123,11 +123,11 @@ public class DescentParser
 
             pairs[key] = value;
 
-            if (!PeekTokenIs(TokenConstants.RBRACE) && !PeekExpected(TokenConstants.COMMA))
+            if (!PeekTokenIs(TokenConstants.Rbrace) && !PeekExpected(TokenConstants.Comma))
                 return null;
         }
 
-        return PeekExpected(TokenConstants.RBRACE) ? new HashLiteral(token, pairs) : null;
+        return PeekExpected(TokenConstants.Rbrace) ? new HashLiteral(token, pairs) : null;
     }
 
     private void NextToken()
@@ -179,7 +179,7 @@ public class DescentParser
 
     private IExpressionNode? ParseArrayLiteral()
     {
-        return new ArrayLiteral(currToken, ParseExpressionList(TokenConstants.RBRACKET));
+        return new ArrayLiteral(currToken, ParseExpressionList(TokenConstants.Rbracket));
     }
 
     private IExpressionNode? ParseIndexExpression(IExpressionNode left) 
@@ -187,7 +187,7 @@ public class DescentParser
         NextToken();
         var token = currToken;
         var indexExpression = ParseExpression(Precedence.LOWEST);
-        return PeekExpected(TokenConstants.RBRACKET) ? 
+        return PeekExpected(TokenConstants.Rbracket) ? 
             new IndexExpression(token, left, indexExpression) : null;
     }
 
@@ -203,7 +203,7 @@ public class DescentParser
         }
         var leftExpression = prefixParseFunction();
 
-        while (!PeekTokenIs(TokenConstants.SEMICOLON) && precidence < PeekPrecedence())
+        while (!PeekTokenIs(TokenConstants.Semicolon) && precidence < PeekPrecedence())
         {
             var infixFunction = infixFunctions[peekToken.Type];
             if (infixFunction == null)
@@ -253,7 +253,7 @@ public class DescentParser
 
     private IExpressionNode? ParseBoolean()
     {
-        return new AST.Boolean(currToken, CurrentTokenIs(TokenConstants.TRUE));
+        return new AST.Boolean(currToken, CurrentTokenIs(TokenConstants.True));
     }
 
     private IExpressionNode? ParseGroupExpression()
@@ -261,7 +261,7 @@ public class DescentParser
         NextToken();
 
         var expression = ParseExpression(Precedence.LOWEST);
-        if (!PeekExpected(TokenConstants.RPAREN))
+        if (!PeekExpected(TokenConstants.Rparen))
             return null;
 
         return expression;
@@ -273,19 +273,19 @@ public class DescentParser
         Identifier name;
         IExpressionNode? value;
 
-        if (!PeekExpected(TokenConstants.IDENT))
+        if (!PeekExpected(TokenConstants.Ident))
             return null;
 
         name = new Identifier(currToken, currToken.Literal);
 
-        if (!PeekExpected(TokenConstants.ASSIGN)) 
+        if (!PeekExpected(TokenConstants.Assign)) 
             return null;
 
         NextToken();
 
         value = ParseExpression(Precedence.LOWEST);
 
-        if (PeekTokenIs(TokenConstants.SEMICOLON))
+        if (PeekTokenIs(TokenConstants.Semicolon))
             NextToken();
 
         return new LetStatement(token, name, value);
@@ -300,7 +300,7 @@ public class DescentParser
 
         returnValue = ParseExpression(Precedence.LOWEST);
 
-        if (PeekTokenIs(TokenConstants.SEMICOLON))
+        if (PeekTokenIs(TokenConstants.Semicolon))
             NextToken();
 
         return new ReturnStatement(token, returnValue);
@@ -311,7 +311,7 @@ public class DescentParser
         JoeToken token = currToken;
         IExpressionNode? expression = ParseExpression(Precedence.LOWEST);
 
-        if (PeekTokenIs(TokenConstants.SEMICOLON))
+        if (PeekTokenIs(TokenConstants.Semicolon))
             NextToken();
 
         return new ExpressionStatement(token, expression);
@@ -321,9 +321,9 @@ public class DescentParser
     {
         switch (currToken.Type) 
         {
-            case TokenConstants.LET:
+            case TokenConstants.Let:
                 return ParseLetStatement();
-            case TokenConstants.RETURN:
+            case TokenConstants.Return:
                 return ParseReturnStatement();
             default:
                 return ParseExpressionStatement();
@@ -337,7 +337,7 @@ public class DescentParser
 
         NextToken();
 
-        while (!CurrentTokenIs(TokenConstants.RBRACE) && !CurrentTokenIs(TokenConstants.EOF)) 
+        while (!CurrentTokenIs(TokenConstants.Rbrace) && !CurrentTokenIs(TokenConstants.Eof)) 
         {
             var statement = ParseStatement();
             if (statement != null)
@@ -356,25 +356,25 @@ public class DescentParser
         BlockStatement consequence;
         BlockStatement? alternative = null;
 
-        if (!PeekExpected(TokenConstants.LPAREN))
+        if (!PeekExpected(TokenConstants.Lparen))
             return null;
 
         NextToken();
         condition = ParseExpression(Precedence.LOWEST);
 
-        if (!PeekExpected(TokenConstants.RPAREN))
+        if (!PeekExpected(TokenConstants.Rparen))
             return null;
 
-        if (!PeekExpected(TokenConstants.LBRACE))
+        if (!PeekExpected(TokenConstants.Lbrace))
             return null;
 
         consequence = ParseBlockStatement();
 
-        if (PeekTokenIs(TokenConstants.ELSE))
+        if (PeekTokenIs(TokenConstants.Else))
         {
             NextToken();
 
-            if (!PeekExpected(TokenConstants.LBRACE))
+            if (!PeekExpected(TokenConstants.Lbrace))
                 return null;
 
             alternative = ParseBlockStatement();
@@ -387,7 +387,7 @@ public class DescentParser
     {
         List<Identifier> identifiers = new List<Identifier>();
 
-        if (PeekTokenIs(TokenConstants.RPAREN))
+        if (PeekTokenIs(TokenConstants.Rparen))
         {
             NextToken();
             return identifiers.ToArray();
@@ -398,7 +398,7 @@ public class DescentParser
         var identifier = new Identifier(currToken, currToken.Literal);
         identifiers.Add(identifier);
 
-        while (PeekTokenIs(TokenConstants.COMMA))
+        while (PeekTokenIs(TokenConstants.Comma))
         {
             NextToken();
             NextToken();
@@ -406,7 +406,7 @@ public class DescentParser
             identifiers.Add(identifier);
         }
 
-        if (!PeekExpected(TokenConstants.RPAREN))
+        if (!PeekExpected(TokenConstants.Rparen))
             return null;
 
         return identifiers.ToArray();
@@ -418,12 +418,12 @@ public class DescentParser
         Identifier[]? functionParamaters;
         BlockStatement body;
 
-        if (!PeekExpected(TokenConstants.LPAREN))
+        if (!PeekExpected(TokenConstants.Lparen))
             return null;
 
         functionParamaters = ParseFunctionParameters();
 
-        if (!PeekExpected(TokenConstants.LBRACE))
+        if (!PeekExpected(TokenConstants.Lbrace))
             return null;
 
         body = ParseBlockStatement();
@@ -458,7 +458,7 @@ public class DescentParser
 
         list.Add(ParseExpression(Precedence.LOWEST));
 
-        while (PeekTokenIs(TokenConstants.COMMA)) 
+        while (PeekTokenIs(TokenConstants.Comma)) 
         { 
             NextToken();
             NextToken();
@@ -472,7 +472,7 @@ public class DescentParser
     private CallExpression ParseCallExpression(IExpressionNode function)
     {
         JoeToken token = currToken;
-        IExpressionNode[]? arguments = ParseExpressionList(TokenConstants.RPAREN);
+        IExpressionNode[]? arguments = ParseExpressionList(TokenConstants.Rparen);
         return new CallExpression(token, function, arguments);
     }
 }

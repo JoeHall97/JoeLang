@@ -3,7 +3,6 @@
 public class JoeEnvironment
 {
     private Dictionary<string, IJoeObject> store;
-    private JoeEnvironment? outer;
 
     public JoeEnvironment()
     {
@@ -13,19 +12,16 @@ public class JoeEnvironment
     public JoeEnvironment(JoeEnvironment environment)
     {
         store = new Dictionary<string, IJoeObject>();
-        outer = environment;
+        Outer = environment;
     }
 
-    public JoeEnvironment? Outer { get =>  outer; }
+    public JoeEnvironment? Outer { get; }
 
     public IJoeObject? Get(string key) 
     {
-        IJoeObject? result;
-        if (store.TryGetValue(key,out result))
+        if (store.TryGetValue(key,out var result))
             return result;
-        if (outer != null)
-            return outer.Get(key);
-        return null;
+        return Outer is not null  ? Outer!.Get(key) : null;
     }
 
     public void Set(string name, IJoeObject value) 

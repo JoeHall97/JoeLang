@@ -78,8 +78,8 @@ public class EvaluatorUnitTests
             { (new JoeString("two")).HashKey(), 2 },
             { (new JoeString("three")).HashKey(), 3 },
             { (new JoeInteger(4)).HashKey(), 4 },
-            { EvaluatorConstants.TRUE.HashKey(), 5 },
-            { EvaluatorConstants.FALSE.HashKey(), 6 },
+            { EvaluatorConstants.True.HashKey(), 5 },
+            { EvaluatorConstants.False.HashKey(), 6 },
         };
 
         Assert.Equal(expected.Count, results.Pairs.Count);

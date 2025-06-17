@@ -5,7 +5,6 @@ namespace JoeLang.Lexer;
 
 public class JoeLexer
 {
-    private readonly string input;
     // current position in the input (points to the current char)
     private int position;
     // current reading position in the input (points after the current char)
@@ -15,135 +14,136 @@ public class JoeLexer
 
     public JoeLexer(string input)
     {
-        this.input = input;
+        this.Input = input;
         ReadChar();
     }
 
-    public string Input
-    {
-        get { return input; }
-    }
+    public string Input { get; }
 
     public JoeToken NextToken()
     {
-        JoeToken token;
-
-        SkipWhitespace();
-
-        switch (ch)
+        while (true)
         {
-            case '+':
-                token = new JoeToken(TokenConstants.PLUS, ch.ToString());
-                break;
-            case '-':
-                token = new JoeToken(TokenConstants.MINUS, ch.ToString());
-                break;
-            case '/':
-                if (PeekChar() != '/')
-                {
-                    token = new JoeToken(TokenConstants.SLASH, ch.ToString());
-                    break;
-                }
-                SkipLine();
-                return NextToken();
-            case '*':
-                token = new JoeToken(TokenConstants.ASTERISK, ch.ToString());
-                break;
-            case '<':
-                token = new JoeToken(TokenConstants.LT, ch.ToString());
-                break;
-            case '>':
-                token = new JoeToken(TokenConstants.GT, ch.ToString());
-                break;
-            case ';':
-                token = new JoeToken(TokenConstants.SEMICOLON, ch.ToString());
-                break;
-            case ':':
-                token = new JoeToken(TokenConstants.COLON, ch.ToString());
-                break;
-            case ',':
-                token = new JoeToken(TokenConstants.COMMA, ch.ToString());
-                break;
-            case '(':
-                token = new JoeToken(TokenConstants.LPAREN, ch.ToString());
-                break;
-            case ')':
-                token = new JoeToken(TokenConstants.RPAREN, ch.ToString());
-                break;
-            case '{':
-                token = new JoeToken(TokenConstants.LBRACE, ch.ToString());
-                break;
-            case '}':
-                token = new JoeToken(TokenConstants.RBRACE, ch.ToString());
-                break;
-            case '[':
-                token = new JoeToken(TokenConstants.LBRACKET, ch.ToString());
-                break;
-            case ']':
-                token = new JoeToken(TokenConstants.RBRACKET, ch.ToString());
-                break;
-            case '\0':
-                token = new JoeToken(TokenConstants.EOF, "");
-                break;
-            case '=':
-                if (PeekChar() == '=')
-                {
-                    var ch = this.ch;
-                    ReadChar();
-                    var literal = ch.ToString() + this.ch.ToString();
-                    token = new JoeToken(TokenConstants.EQ, literal);
-                }
-                else
-                {
-                    token = new JoeToken(TokenConstants.ASSIGN, ch.ToString());
-                }
-                break;
-            case '!':
-                if (PeekChar() == '=')
-                {
-                    var ch = this.ch;
-                    ReadChar();
-                    var literal = ch.ToString() + this.ch.ToString();
-                    token = new JoeToken(TokenConstants.NOT_EQ, literal);
-                }
-                else
-                {
-                    token = new JoeToken(TokenConstants.BANG, ch.ToString());
-                }
-                break;
-            case '"':
-                token = new JoeToken(TokenConstants.STRING, ReadString());
-                break;
-            default:
-                if (char.IsLetter(ch))
-                {
-                    var literal = ReadIdentifier();
-                    token = new JoeToken(Tokens.LookupIdentifier(literal), literal);
-                    return token;
-                }
-                else if (char.IsDigit(ch))
-                {
-                    token = new JoeToken(TokenConstants.INT, ReadNumber());
-                    return token;
-                }
-                else
-                {
-                    token = new JoeToken(TokenConstants.ILLEGAL, ch.ToString());
-                }
-                break;
-        }
+            JoeToken token;
 
-        ReadChar();
-        return token;
+            SkipWhitespace();
+
+            switch (ch)
+            {
+                case '+':
+                    token = new JoeToken(TokenConstants.Plus, ch.ToString());
+                    break;
+                case '-':
+                    token = new JoeToken(TokenConstants.Minus, ch.ToString());
+                    break;
+                case '/':
+                    if (PeekChar() != '/')
+                    {
+                        token = new JoeToken(TokenConstants.Slash, ch.ToString());
+                        break;
+                    }
+
+                    SkipLine();
+                    continue;
+                case '*':
+                    token = new JoeToken(TokenConstants.Asterisk, ch.ToString());
+                    break;
+                case '<':
+                    token = new JoeToken(TokenConstants.Lt, ch.ToString());
+                    break;
+                case '>':
+                    token = new JoeToken(TokenConstants.Gt, ch.ToString());
+                    break;
+                case ';':
+                    token = new JoeToken(TokenConstants.Semicolon, ch.ToString());
+                    break;
+                case ':':
+                    token = new JoeToken(TokenConstants.Colon, ch.ToString());
+                    break;
+                case ',':
+                    token = new JoeToken(TokenConstants.Comma, ch.ToString());
+                    break;
+                case '(':
+                    token = new JoeToken(TokenConstants.Lparen, ch.ToString());
+                    break;
+                case ')':
+                    token = new JoeToken(TokenConstants.Rparen, ch.ToString());
+                    break;
+                case '{':
+                    token = new JoeToken(TokenConstants.Lbrace, ch.ToString());
+                    break;
+                case '}':
+                    token = new JoeToken(TokenConstants.Rbrace, ch.ToString());
+                    break;
+                case '[':
+                    token = new JoeToken(TokenConstants.Lbracket, ch.ToString());
+                    break;
+                case ']':
+                    token = new JoeToken(TokenConstants.Rbracket, ch.ToString());
+                    break;
+                case '\0':
+                    token = new JoeToken(TokenConstants.Eof, "");
+                    break;
+                case '=':
+                    if (PeekChar() == '=')
+                    {
+                        var ch = this.ch;
+                        ReadChar();
+                        var literal = ch.ToString() + this.ch.ToString();
+                        token = new JoeToken(TokenConstants.Eq, literal);
+                    }
+                    else
+                    {
+                        token = new JoeToken(TokenConstants.Assign, ch.ToString());
+                    }
+
+                    break;
+                case '!':
+                    if (PeekChar() == '=')
+                    {
+                        var ch = this.ch;
+                        ReadChar();
+                        var literal = ch.ToString() + this.ch.ToString();
+                        token = new JoeToken(TokenConstants.NotEq, literal);
+                    }
+                    else
+                    {
+                        token = new JoeToken(TokenConstants.Bang, ch.ToString());
+                    }
+
+                    break;
+                case '"':
+                    token = new JoeToken(TokenConstants.String, ReadString());
+                    break;
+                default:
+                    if (char.IsLetter(ch))
+                    {
+                        var literal = ReadIdentifier();
+                        token = new JoeToken(Tokens.LookupIdentifier(literal), literal);
+                        return token;
+                    }
+                    else if (char.IsDigit(ch))
+                    {
+                        token = new JoeToken(TokenConstants.Int, ReadNumber());
+                        return token;
+                    }
+                    else
+                    {
+                        token = new JoeToken(TokenConstants.Illegal, ch.ToString());
+                    }
+
+                    break;
+            }
+
+            ReadChar();
+            return token;
+        }
     }
 
-    
+
     public char PeekChar()
     {
-        if (readPosition >= input.Length)
-            return '\0';
-        else
-            return input[readPosition];
+        return readPosition >= Input.Length ? '\0' : Input[readPosition];
     }
 
     public string ReadString()
@@ -157,22 +157,19 @@ public class JoeLexer
                 break;
         }
 
-        return input.Substring(pos,position-pos);
+        return Input.Substring(pos,position-pos);
     }
 
     private void ReadChar()
     {
-        if (readPosition >= input.Length)
-            ch = '\0';
-        else
-            ch = input[readPosition];
+        ch = readPosition >= Input.Length ? '\0' : Input[readPosition];
         position = readPosition;
         readPosition += 1;
     }
 
     private void SkipWhitespace()
     {
-        while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r')
+        while (ch is ' ' or '\t' or '\n' or '\r')
             ReadChar();
     }
 
@@ -189,7 +186,7 @@ public class JoeLexer
 
         while (char.IsLetter(ch)) { ReadChar(); len++; }
 
-        return input.Substring(pos, len);
+        return Input.Substring(pos, len);
     }
 
     private string ReadNumber()
@@ -199,6 +196,6 @@ public class JoeLexer
 
         while (char.IsDigit(ch)) { ReadChar(); len++; }
 
-        return input.Substring(pos, len);
+        return Input.Substring(pos, len);
     }
 }

@@ -10,16 +10,16 @@ public class ASTUnitTests
     public void TestToString()
     {
         var nameIdentifier = new Identifier(
-            new JoeToken(TokenConstants.IDENT, "myVar"), 
+            new JoeToken(TokenConstants.Ident, "myVar"), 
             "myVar"
         );
         var valueIdentifier = new Identifier(
-            new JoeToken(TokenConstants.IDENT, "anotherVar"), 
+            new JoeToken(TokenConstants.Ident, "anotherVar"), 
             "anotherVar"
         );
 
         var letStatement = new LetStatement(
-            new JoeToken(TokenConstants.LET, "let"), 
+            new JoeToken(TokenConstants.Let, "let"), 
             nameIdentifier, 
             valueIdentifier
         );

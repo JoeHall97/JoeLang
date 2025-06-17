@@ -18,13 +18,13 @@ public static class Tokens
 {
     private static Dictionary<string, string> _keywordsMap = new()
     {
-        {"fn" , TokenConstants.FUNCTION},
-        {"let" , TokenConstants.LET},
-        {"true" , TokenConstants.TRUE},
-        {"false" , TokenConstants.FALSE},
-        {"if" , TokenConstants.IF},
-        {"else" , TokenConstants.ELSE},
-        {"return" , TokenConstants.RETURN},
+        {"fn" , TokenConstants.Function},
+        {"let" , TokenConstants.Let},
+        {"true" , TokenConstants.True},
+        {"false" , TokenConstants.False},
+        {"if" , TokenConstants.If},
+        {"else" , TokenConstants.Else},
+        {"return" , TokenConstants.Return},
     };
 
     public static string LookupIdentifier(string ident)
@@ -32,7 +32,7 @@ public static class Tokens
         if (_keywordsMap.ContainsKey(ident))
             return _keywordsMap[ident];
 
-        return TokenConstants.IDENT;
+        return TokenConstants.Ident;
     }
 
     public static JoeToken NewToken(string type, string literal)

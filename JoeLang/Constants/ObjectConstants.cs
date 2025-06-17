@@ -8,14 +8,14 @@ namespace JoeLang.Constants;
 
 public static class ObjectConstants
 {
-    public const string ERROR_OBJECT = "ERROR";
-    public const string INT_OBJECT = "INTEGER";
-    public const string BOOL_OBJECT = "BOOLEAN";
-    public const string NULL_OBJECT = "NULL";
-    public const string RETURN_OBJECT = "RETURN_VALUE";
-    public const string FUNCTION_OBJECT = "FUNCTION";
-    public const string STRING_OBJECT = "STRING";
-    public const string BUILTIN_OBJECT = "BUILTIN";
-    public const string ARRAY_OBJECT = "ARRAY";
-    public const string HASH_OBJECT = "HASH";
+    public const string ErrorObject = "ERROR";
+    public const string IntObject = "INTEGER";
+    public const string BoolObject = "BOOLEAN";
+    public const string NullObject = "NULL";
+    public const string ReturnObject = "RETURN_VALUE";
+    public const string FunctionObject = "FUNCTION";
+    public const string StringObject = "STRING";
+    public const string BuiltinObject = "BUILTIN";
+    public const string ArrayObject = "ARRAY";
+    public const string HashObject = "HASH";
 }
