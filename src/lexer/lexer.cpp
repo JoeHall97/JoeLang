@@ -1,178 +1,175 @@
-#include <ctype.h>
-#include "lexer.hpp"
-#include <iostream>
+#include <lexer/lexer.hpp>
+#include <token/token.hpp>
 
-// public Lexer functions
+using lexer::Lexer, token::Token, token::TokenType;
 
 Lexer::Lexer(std::string in) {
     input = in;
     readPosition = 0;
-    read_char();
+    readChar();
 }
 
-Token Lexer::next_token() {
+Token Lexer::nextToken() {
     Token token;
 
-    skip_whitespace();
+    skipWhitespace();
 
     switch (ch) {
         case '"':
-            token.type = STRING;
-            token.literal = read_string();
+            token.type = TokenType::STRING;
+            token.literal = readString();
             break;
         case '=':
-            if (peek_char() == '=') {
-                auto prev_ch = std::string(1,ch);
-                read_char();
-                token.type = EQ;
+            if (peekChar() == '=') {
+                auto prev_ch = std::string(1, ch);
+                readChar();
+                token.type = TokenType::EQ;
                 token.literal = prev_ch + ch;
                 break;
             }
-            token.type = ASSIGN;
+            token.type = TokenType::ASSIGN;
             token.literal = ch;
             break;
         case '+':
-            token.type = PLUS;
+            token.type = TokenType::PLUS;
             token.literal = ch;
             break;
         case '-':
-            token.type = MINUS;
+            token.type = TokenType::MINUS;
             token.literal = ch;
             break;
         case '!':
-            if (peek_char() == '=') {
-                auto prev_ch = std::string(1,ch);
-                read_char();
-                token.type = NOT_EQ;
+            if (peekChar() == '=') {
+                auto prev_ch = std::string(1, ch);
+                readChar();
+                token.type = TokenType::NOT_EQ;
                 token.literal = prev_ch + ch;
                 break;
             }
-            token.type = BANG;
+            token.type = TokenType::BANG;
             token.literal = ch;
             break;
         case '/':
-            token.type = SLASH;
+            token.type = TokenType::SLASH;
             token.literal = ch;
             break;
         case '*':
-            token.type = ASTERISK;
+            token.type = TokenType::ASTERISK;
             token.literal = ch;
             break;
         case '<':
-            token.type = LT;
+            token.type = TokenType::LT;
             token.literal = ch;
             break;
         case '>':
-            token.type = GT;
+            token.type = TokenType::GT;
             token.literal = ch;
             break;
         case ';':
-            token.type = SEMICOLON;
+            token.type = TokenType::SEMICOLON;
             token.literal = ch;
             break;
         case ',':
-            token.type = COMMA;
+            token.type = TokenType::COMMA;
             token.literal = ch;
             break;
         case '(':
-            token.type = LPAREN;
+            token.type = TokenType::LPAREN;
             token.literal = ch;
             break;
         case ')':
-            token.type = RPAREN;
+            token.type = TokenType::RPAREN;
             token.literal = ch;
             break;
         case '{':
-            token.type = LBRACE;
+            token.type = TokenType::LBRACE;
             token.literal = ch;
             break;
         case '}':
-            token.type = RBRACE;
+            token.type = TokenType::RBRACE;
             token.literal = ch;
             break;
         case '[':
-            token.type = LBRACKET;
+            token.type = TokenType::LBRACKET;
             token.literal = ch;
             break;
         case ']':
-            token.type = RBRACKET;
+            token.type = TokenType::RBRACKET;
             token.literal = ch;
             break;
         case ':':
-            token.type = COLON;
+            token.type = TokenType::COLON;
             token.literal = ch;
             break;
         case '\0':
-            token.type = ENDOFFILE;
+            token.type = TokenType::ENDOFFILE;
             token.literal = "";
             break;
         default:
             if (isalpha(ch)) {
-                token.literal = read_identifier();
-                token.type = look_up_ident(token.literal);
+                token.literal = readIdentifier();
+                token.type = token::lookUpIdent(token.literal);
                 return token;
             }
             if (isdigit(ch)) {
-                token.type = INT;
-                token.literal = read_number();
+                token.type = TokenType::INT;
+                token.literal = readNumber();
                 return token;
             }
-            token.type = ILLEGAL;
+            token.type = TokenType::ILLEGAL;
             token.literal = ch;
             break;
     }
 
-    read_char();
+    readChar();
     return token;
 }
- 
-// private Lexer functions
 
-std::string Lexer::read_string() {
+std::string Lexer::readString() {
     int pos = position + 1;
     int length = 0;
 
     while (true) {
-        read_char();
+        readChar();
         ++length;
         if (ch == '"' || ch == '\0')
             break;
     }
 
-    return input.substr(pos, length-1);
+    return input.substr(pos, length - 1);
 }
 
-std::string Lexer::read_identifier() {
+std::string Lexer::readIdentifier() {
     int pos = position;
     int length = 0;
 
     while (isalpha(ch) && ch != '"') {
-        read_char();
+        readChar();
         ++length;
     }
 
     return input.substr(pos, length);
 }
 
-std::string Lexer::read_number() {
+std::string Lexer::readNumber() {
     int pos = position;
     int length = 0;
 
     while (isdigit(ch)) {
-        read_char();
+        readChar();
         ++length;
     }
 
     return input.substr(pos, length);
 }
 
-void Lexer::skip_whitespace() {
+void Lexer::skipWhitespace() {
     while (isspace(ch)) {
-        read_char();
+        readChar();
     }
 }
 
-void Lexer::read_char() {
+void Lexer::readChar() {
     if (readPosition >= input.length()) {
         ch = '\0';
     } else {
@@ -182,6 +179,6 @@ void Lexer::read_char() {
     ++readPosition;
 }
 
-char Lexer::peek_char() {
+char Lexer::peekChar() const {
     return readPosition > input.length() ? '\0' : input[readPosition];
 }

@@ -1,11 +1,23 @@
-SET (LEXER_SRC
-    lexer.cpp
-    tokens/tokens.cpp
+set(LEXER_SRC
+        token.cpp
+        lexer.cpp
 )
 
-SET (LEXER_HDRS
-    lexer.hpp
-    tokens/tokens.hpp
+set(LEXER_HDRS
+        "./include/token/token.hpp"
+        "./include/lexer/lexer.hpp"
 )
 
-ADD_LIBRARY(Lexer STATIC ${LEXER_SRC} ${LEXER_SRC})
+add_library(lexer)
+
+target_sources(lexer
+	PUBLIC
+		FILE_SET lexer_headers
+		TYPE HEADERS
+		BASE_DIRS ./include 
+		FILES ${LEXER_HDRS}
+	PRIVATE
+		${LEXER_SRC}
+)
+
+add_library(joelang::lexer ALIAS lexer)
